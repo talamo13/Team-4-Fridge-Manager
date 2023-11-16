@@ -1,6 +1,8 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -11,7 +13,7 @@ public:
     {
         ifstream file(filename);
 
-        if (file.is_open)
+        if (file.is_open())
         {
             listOfUsers.clear();
 
@@ -21,14 +23,14 @@ public:
             {
                 stringstream data(line);
                 string email, password, name;
-                getline(ss, email, ",");
-                getline(ss, password, ",");
-                getline(ss, name, ",");
+                getline(data, email, ',');
+                getline(data, password, ',');
+                getline(data, name, ',');
 
-                addUser(email, password, name);
+                createUser(email, password, name);
             }
 
-            file.close()
+            file.close();
         }
         else
         {
@@ -39,7 +41,17 @@ public:
 
     void createUser(const string& email, const string& password, const string& name)
     {
+        for (const auto& user : listOfUsers)
+        {
+            if (email == user.first.first)
+            {
+                cout << email << " is already associated with another user" << endl;
+                return;
+            }
+        }
+
         listOfUsers.push_back(make_pair(make_pair(email, password), name));
+        cout << email << " has been added!" << endl;
     }
     
     /*
@@ -50,83 +62,92 @@ public:
 
     void displayUsers() const
     {
+        cout << "---------------------------------------------------"<< endl;
+        cout << "| Name                 | Email" << endl;
+        cout << "---------------------------------------------------" << endl;
+
         for (const auto& user : listOfUsers)
         {
-            cout << "Name: " << user.second << "\t\t, "
-                 << "Email: " << user.first.first << endl;
+            cout << "| " << setw(20) << left << user.second
+                << " | " << setw(28) << left << user.first.first << endl;
         }
+
+        cout << "-----------------------------------------------------------------------------" << endl;
     }
 
-    pair<bool, string> displayUser(const string& email) const
+    void displayUser(const string& email) const
     {
         for (const auto& user : listOfUsers)
         {
             if (user.first.first == email)
             {
-                return {true, user.second}
+                cout << "Name: " << user.second
+                     << " | Email: " << user.first.first << endl;
+                return;
             }
         }
 
-        return (false, "")
+        cout << email << " does not exist, please create an account." << endl;
     }
 
-    bool changePassword(const string& email, const string& newPassword)
+    void changePassword(const string& email, const string& newPassword)
     {
         for (auto& user : listOfUsers)
         {
             if (user.first.first == email)
             {
                 user.first.second = newPassword;
-                return true;
+                cout << "Password successfully changed!" << endl;
+                return;
             }
         }
 
-        return false;
+        cout << email << " does not exist, please create an account." << endl;
     }
 
-    bool changeEmail(const string& email, const string& newEmail)
+    void changeEmail(const string& email, const string& newEmail)
     {
         for (auto& user : listOfUsers)
         {
             if (user.first.first == email)
             {
                 user.first.first = newEmail;
-                return true;
+                cout << email << " has been updated to " << newEmail << "." << endl;
+                return;
             }
         }
 
-        return false;
+        cout << email << " does not exist, please create an account." << endl;
     }
 
-    bool deleteUser(const string& email)
+    void deleteUser(const string& email)
     {
         for (auto it = listOfUsers.begin(); it != listOfUsers.end(); it++)
         {
             if (it->first.first == email)
             {
                 it = listOfUsers.erase(it);
-                return true;
+                cout << email << " has been removed." << endl;
+                return;
             }
         }
 
-        return false;
+        cout << email << " does not exist." << endl;
     }
 
     void saveToFile() const
     {
         ofstream file(filename);
-
-        if (file.is_open())
+        for (const auto& user : listOfUsers)
         {
-            for (const auto& user : listOfUsers)
-            {
-                file << user.first.first << "," << user.first.second << "," << user.second << "\n";
-            }
-            file.close();
+            file << user.first.first << "," << user.first.second << "," << user.second << "\n";
         }
+        file.close();
+        
+        // cout << "Saved to " << filename << endl;
     }
 
 private:
     string filename;
-    vector<pair<string, string>, string>> listOfUsers;
+    vector<pair<pair<string, string>, string>> listOfUsers;
 };
