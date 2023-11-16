@@ -3,9 +3,19 @@
 
 using namespace std;
 
+class Users
+{
+public:
+    string email;
+    string password;
+    string name;
 
-class Fridge {
-    public:
+private:
+};
+
+class Fridge 
+{
+public:
     void putItem();
     void removeItem();
     void addSection();
@@ -22,7 +32,7 @@ class Fridge {
     vector<string> getUsers();
     vector<string> getSections();
 
-    private:
+private:
     struct section; // This will be how we can store the different sizes of the sections of the fridge (l,w,d)
     vector<section> sections; //This will hold all of the different sections of the fridge
     vector<string> users;
@@ -31,12 +41,11 @@ class Fridge {
     string password;
     string name;
     double volume;
-
 };
 
-
-class Item {
-    public:
+class Item 
+{
+public:
     void setName();
     void setVolume(); // This will ask the user for the items measurements (l,w,d)
     void setExpiration();
@@ -45,7 +54,7 @@ class Item {
     string getExpiration();
     double getVolume();
 
-    private:
+private:
     string name;
     string expiration;
     double volume;
