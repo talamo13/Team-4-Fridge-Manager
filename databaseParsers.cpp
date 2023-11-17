@@ -3,6 +3,7 @@
 #include <vector>
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
 
 #include "refrigeratorClasses.cpp"
 
@@ -11,26 +12,94 @@ using namespace std;
 class User
 {
 public:
-    User(const string& email, const string& password, const string& name) : email(email),
-         password(password), name(name)
+    User(const string& email, const string& password, const string& name, 
+         vector<string> associatedFridges, vector<string> associatedAllergies) : email(email),
+         password(password), name(name), associatedFridges(associatedFridges), 
+         associatedAllergies(associatedAllergies)
     {
-
+        // should be empty, Users can only be created when all values are filled
     }
 
-    void setEmail();
-    void setPassword();
-    void setName();
+    void setEmail(const string& newEmail)
+    {
+        email = newEmail;
+    }
 
-    void getEmail();
-    void getPassword();
-    void getName();
+    void setPassword(const string& newPassword)
+    {
+        password = newPassword;
+    }
+
+    string getEmail() const
+    {
+        return email;
+    }
+
+    string getPassword() const
+    {
+        return password;
+    }
+
+    string getName() const
+    {
+        return name;
+    }
+
+    vector<string> getFridges() const
+    {
+        return associatedFridges;
+    }
+
+    vector<string> getAllergies() const
+    {
+        return associatedAllergies;
+    }
+
+    void addFridges(const string& newFridge)
+    {
+        associatedFridges.push_back(newFridge);
+    }
+    
+    void deleteFridge(const string& fridge)
+    {
+        auto it = find(associatedFridges.begin(), associatedFridges.end(), fridge);
+
+        if (it != associatedFridges.end())
+        {
+            associatedFridges.erase(it);
+        }
+        else
+        {
+            cout << "Fridge not found." << endl;
+        }
+    }
+
+    void addAllergy(const string& newAllergy)
+    {
+        associatedAllergies.push_back(newAllergy);
+    }
+    
+    void deleteAllergy(const string& allergy)
+    {
+        auto it = find(associatedAllergies.begin(), associatedAllergies.end(), allergy);
+
+        if (it != associatedAllergies.end())
+        {
+            associatedAllergies.erase(it);
+        }
+        else
+        {
+            cout << "Allergy not found." << endl;
+        }
+    }
 
 private:
-    vector<string> associatedFridges;
     string email;
     string password;
     string name;
-    vector<string> allergies;
+
+    vector<string> associatedFridges;
+    vector<string> associatedAllergies;
 };
 
 class Fridge
@@ -67,7 +136,7 @@ private:
     double remainingCapacity;
     double totalCapacity;
 
-    vector<Section> sections;
+    // vector<Section> sections;
     vector<User> users;
 };
 
@@ -119,10 +188,9 @@ private:
     double usedCapacity;
     double totalCapacity;
 
-    struct section; // This will be how we can store the different sizes of the sections of the fridge (l,w,d)
-    vector<section> sections; //This will hold all of the different sections of the fridge
+    // vector<section> sections; //This will hold all of the different sections of the fridge
     vector<User> users;
-    vector<Item> items;
+    // vector<Item> items;
     string username;
     string password;
 };
@@ -148,6 +216,7 @@ public:
             getline(data, password, ',');
             getline(data, name, ',');
 
+            // saves associated fridges to user
             string fridgeList;
             vector<string> associatedFridges;
             getline(data, fridgeList, ',');
@@ -158,33 +227,47 @@ public:
             {
                 associatedFridges.push_back(fridge);
             }
+            
+            // saves associated allergies to user
+            string allergyList;
+            vector<string> associatedAllergies;
+            getline(data, allergyList, ',');
 
-            createUser(email, password, name, associatedFridges);
+            stringstream listOfAllergies(allergyList);
+            string allergy;
+            while(getline(listOfAllergies, allergy, '-'))
+            {
+                associatedAllergies.push_back(allergy);
+            }
+
+            createUser(email, password, name, associatedFridges, associatedAllergies);
         }
 
         file.close();
     }
 
-    void createUser(const string& email, const string& password, const string& name, vector<string> associatedFridges)
+    // should only be used inside this class
+    void createUser(const string& email, const string& password, const string& name, 
+                    vector<string> associatedFridges, vector<string> associatedAllergies)
+    {
+        listOfUsers.push_back(User(email, password, name, associatedFridges, associatedAllergies));
+    }
+
+    void addUser(const string& email, const string& password, const string& name, 
+                    vector<string> associatedFridges, vector<string> associatedAllergies)
     {
         for (const auto& user : listOfUsers)
         {
-            if (email == user)
+            if (email == user.getEmail())
             {
                 cout << email << " is already associated with another user" << endl;
                 return;
             }
         }
 
-        listOfUsers.push_back(make_pair(make_pair(email, password), name));
+        listOfUsers.push_back(User(email, password, name, associatedFridges, associatedAllergies));
         cout << email << " has been added!" << endl;
     }
-    
-    /*
-    "Email: " << user.first.first
-    "Password: " << user.first.second
-    "Name: " << user.second
-    */
 
     void displayUsers() const
     {
@@ -194,8 +277,8 @@ public:
 
         for (const auto& user : listOfUsers)
         {
-            cout << "| " << setw(20) << left << user.second
-                << " | " << setw(28) << left << user.first.first << endl;
+            cout << "| " << setw(20) << left << user.getEmail()
+                << " | " << setw(28) << left << user.getName() << endl;
         }
 
         cout << "-----------------------------------------------------------------------------" << endl;
@@ -205,10 +288,10 @@ public:
     {
         for (const auto& user : listOfUsers)
         {
-            if (user.first.first == email)
+            if (user.getEmail() == email)
             {
-                cout << "Name: " << user.second
-                     << " | Email: " << user.first.first << endl;
+                cout << "Name: " << user.getName()
+                     << " | Email: " << user.getEmail() << endl;
                 return;
             }
         }
@@ -220,9 +303,9 @@ public:
     {
         for (auto& user : listOfUsers)
         {
-            if (user.first.first == email)
+            if (user.getEmail() == email)
             {
-                user.first.second = newPassword;
+                user.setPassword(newPassword);
                 cout << "Password successfully changed!" << endl;
                 return;
             }
@@ -235,9 +318,9 @@ public:
     {
         for (auto& user : listOfUsers)
         {
-            if (user.first.first == email)
+            if (user.getEmail() == email)
             {
-                user.first.first = newEmail;
+                user.setEmail(newEmail);
                 cout << email << " has been updated to " << newEmail << "." << endl;
                 return;
             }
@@ -250,7 +333,7 @@ public:
     {
         for (auto it = listOfUsers.begin(); it != listOfUsers.end(); it++)
         {
-            if (it->first.first == email)
+            if (it->getEmail() == email)
             {
                 it = listOfUsers.erase(it);
                 cout << email << " has been removed." << endl;
@@ -266,7 +349,21 @@ public:
         ofstream file(filename);
         for (const auto& user : listOfUsers)
         {
-            file << user.first.first << "," << user.first.second << "," << user.second << "\n";
+            file << user.getEmail() << "," << user.getPassword() << "," << user.getName();
+            
+            file << "," << user.getFridges()[0];
+            for (size_t i = 1; i < user.getFridges().size(); i++)
+            {
+                file << "-" << user.getFridges()[i];
+            }
+
+            file << "," << user.getAllergies()[0];
+            for (size_t i = 1; i < user.getAllergies().size(); i++)
+            {
+                file << "-" << user.getAllergies()[i];
+            }
+
+            file << "\n";
         }
         file.close();
         
