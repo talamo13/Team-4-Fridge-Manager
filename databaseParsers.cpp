@@ -8,6 +8,56 @@
 
 using namespace std;
 
+class User
+{
+public:
+    void setEmail();
+    void setPassword();
+    void setName();
+
+    void getEmail();
+    void getPassword();
+    void getName();
+
+private:
+    vector<string> fridges;
+    string email;
+    string password;
+    string name;
+};
+
+class Fridge 
+{
+public:
+    void putItem();
+    void removeItem();
+    void addSection();
+
+    void setPassword();
+    void setUsername();
+    void setUser();
+    void setSection();
+
+    double getVolume();
+    string getUsername();
+    string getPassword();
+    vector<string> getContents();
+    vector<string> getUsers();
+    vector<string> getSections();
+
+private:
+    string name;
+    double usedCapacity;
+    double totalCapacity;
+
+    struct section; // This will be how we can store the different sizes of the sections of the fridge (l,w,d)
+    vector<section> sections; //This will hold all of the different sections of the fridge
+    vector<User> users;
+    vector<Item> items;
+    string username;
+    string password;
+};
+
 // master database for users
 class UserProfiles
 {
@@ -155,8 +205,8 @@ private:
     vector<pair<pair<string, string>, string>> listOfUsers;
 };
 
-
 // database for fridge and their values, users and their items connected to fridge
+/*
 class Fridge
 {
 public:
@@ -195,3 +245,4 @@ private:
     string volume;
     string 
 };
+*/
