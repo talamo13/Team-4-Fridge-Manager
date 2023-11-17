@@ -4,12 +4,15 @@
 #include <sstream>
 #include <iomanip>
 
+#include "refrigeratorClasses.cpp"
+
 using namespace std;
 
-class Users
+// master database for users
+class UserProfiles
 {
 public:
-    Users(const string& filename) : filename(filename)
+    UserProfiles(const string& filename) : filename(filename)
     {
         ifstream file(filename);
 
@@ -150,4 +153,45 @@ public:
 private:
     string filename;
     vector<pair<pair<string, string>, string>> listOfUsers;
+};
+
+
+// database for fridge and their values, users and their items connected to fridge
+class Fridge
+{
+public:
+    FridgeUsers(const string& filename) : fridgeName(filename)
+    {
+        ifstream file(filename);
+
+        if (file.is_open())
+        {
+            listOfUsers.clear();
+
+            string line;
+
+            while(getline(file, line))
+            {
+                stringstream data(line);
+                string email, password, name;
+                getline(data, email, ',');
+                getline(data, password, ',');
+                getline(data, name, ',');
+
+                createUser(email, password, name);
+            }
+
+            file.close();
+        }
+        else
+        {
+            ofstream createFile(filename);
+            createFile.close();
+        }
+    }
+
+private:
+    string fridgeName;
+    string volume;
+    string 
 };

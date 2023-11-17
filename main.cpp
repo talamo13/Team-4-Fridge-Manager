@@ -1,16 +1,19 @@
 #include "databaseParsers.cpp"
+#include "refrigeratorMenu.cpp"
 
 int main()
 {
-    Users userList("users.csv");
+    // UserProfiles userList("masterUsers.csv"); // loads database for ALL users
 
-    userList.displayUser("chickens@gmail.com");
+    // specified fridge associated users implementation database
 
-    userList.createUser("chickens@gmail.com", "chickens123", "Chicken Man");
+    // specified fridge items in fridge 
 
-    userList.changePassword("chickens@gmail.com", "asdfasdf");
+    // user class and their info database
 
-    userList.saveToFile();
 
-    userList.displayUsers();
+
+    displayMenu();
+    selectChoices();
+    return 0;
 }

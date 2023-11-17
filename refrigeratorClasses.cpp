@@ -6,11 +6,18 @@ using namespace std;
 class Users
 {
 public:
+    void setEmail();
+    void setPassword();
+    void setName();
+
+    void getEmail();
+    void getPassword();
+    void getName();
+
+private:
     string email;
     string password;
     string name;
-
-private:
 };
 
 class Fridge 

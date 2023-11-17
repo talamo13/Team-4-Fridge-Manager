@@ -1,19 +1,6 @@
 #include <iostream>
 
 using namespace std;
-// testing
-// Function declarations
-void displayMenu();
-void fridgeDatabase();
-void selectChoices();
-void addFridgeChoices();
-
-int main()
-{
-    displayMenu();
-    selectChoices();
-    return 0;
-}
 
 // Function definitions
 // Function definition displayMenu
@@ -48,7 +35,7 @@ void selectChoices()
             // or system can ask for code for a pre-existing registered refrigerator
             case 1: 
             {
-                addFridgeChoices();
+                // addFridgeChoices();
                 displayMenu();
                 break;
             }
@@ -91,7 +78,7 @@ void selectChoices()
             // Check database
             case 6:
             {
-                fridgeDatabase();
+                // fridgeDatabase();
                 displayMenu();
                 break;
             }
@@ -105,6 +92,7 @@ void selectChoices()
             // User chooses an invalid option
             default:
             {
+                displayMenu();
                 cout << "\nPlease select an option between 1 and 6.\n";
                 break;
             }
