@@ -3,6 +3,7 @@
 
 int main()
 {
+    // Back-End
     UserProfiles userList("masterUsers.csv"); // loads database for ALL users
 
     vector<string> fridges = {"None"};
@@ -22,14 +23,13 @@ int main()
     // user class and their info database
 
 
-
+    // Front-End
     // displayMenu();
     // selectChoices();
 
 
-    // always save to file to update databases
 
-    userList.saveToFile();
+    userList.saveToFile(); // always save to file to update databases
 
     return 0;
 }
