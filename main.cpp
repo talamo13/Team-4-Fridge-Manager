@@ -3,7 +3,7 @@
 
 int main()
 {
-    // UserProfiles userList("masterUsers.csv"); // loads database for ALL users
+    UserProfiles userList("masterUsers.csv"); // loads database for ALL users
 
     // specified fridge associated users implementation database
 

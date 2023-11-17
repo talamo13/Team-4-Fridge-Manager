@@ -11,6 +11,12 @@ using namespace std;
 class User
 {
 public:
+    User(const string& email, const string& password, const string& name) : email(email),
+         password(password), name(name)
+    {
+
+    }
+
     void setEmail();
     void setPassword();
     void setName();
@@ -20,15 +26,23 @@ public:
     void getName();
 
 private:
-    vector<string> fridges;
+    vector<string> associatedFridges;
     string email;
     string password;
     string name;
+    vector<string> allergies;
 };
 
-class Fridge 
+class Fridge
 {
 public:
+    Fridge(const string& name, const double length, const double width, const double height, 
+           double remainingCapacity, const double totalCapacity) : name(name), length(length),
+           width(width), height(height), remainingCapacity(remainingCapacity),
+           totalCapacity(totalCapacity)
+    {
+
+    }
     void putItem();
     void removeItem();
     void addSection();
@@ -47,6 +61,61 @@ public:
 
 private:
     string name;
+    double length;
+    double width;
+    double height;
+    double remainingCapacity;
+    double totalCapacity;
+
+    vector<Section> sections;
+    vector<User> users;
+};
+
+// creates ALL the fridges
+// opens "../Databases/listOfFridges.csv"
+class Fridges
+{
+public:
+    Fridges()
+    {
+        ifstream file(filename);
+
+        fridges.clear();
+
+        string line;
+
+        while(getline(file, line))
+        {
+            stringstream data(line);
+            
+            string name;
+            getline(data, name, ',');
+
+            string length, width, height, remainingCapacity, totalCapacity; 
+            getline(data, length, ',');
+            getline(data, width, ',');
+            getline(data, height, ',');
+            getline(data, remainingCapacity, ',');
+            getline(data, totalCapacity, ',');
+
+            double lengthDouble = stod(length);
+            double widthDouble = stod(width);
+            double heightDouble = stod(height);
+            double remainingCapacityDouble = stod(remainingCapacity);
+            double totalCapacityDouble = stod(totalCapacity);
+
+            
+
+            fridges.push_back(Fridge(name, lengthDouble, widthDouble, heightDouble, 
+                   remainingCapacityDouble, totalCapacityDouble));
+        }
+    }
+
+private:
+    string filename = "../Databases/listOfFridges.csv";
+
+    vector<Fridge> fridges;
+
     double usedCapacity;
     double totalCapacity;
 
@@ -59,6 +128,7 @@ private:
 };
 
 // master database for users
+// opens masterUsers.csv
 class UserProfiles
 {
 public:
@@ -66,37 +136,40 @@ public:
     {
         ifstream file(filename);
 
-        if (file.is_open())
+        listOfUsers.clear();
+
+        string line;
+
+        while(getline(file, line))
         {
-            listOfUsers.clear();
+            stringstream data(line);
+            string email, password, name, fridges, allergies;
+            getline(data, email, ',');
+            getline(data, password, ',');
+            getline(data, name, ',');
 
-            string line;
+            string fridgeList;
+            vector<string> associatedFridges;
+            getline(data, fridgeList, ',');
 
-            while(getline(file, line))
+            stringstream listOfFridges(fridgeList);
+            string fridge;
+            while(getline(listOfFridges, fridge, '-'))
             {
-                stringstream data(line);
-                string email, password, name;
-                getline(data, email, ',');
-                getline(data, password, ',');
-                getline(data, name, ',');
-
-                createUser(email, password, name);
+                associatedFridges.push_back(fridge);
             }
 
-            file.close();
+            createUser(email, password, name, associatedFridges);
         }
-        else
-        {
-            ofstream createFile(filename);
-            createFile.close();
-        }
+
+        file.close();
     }
 
-    void createUser(const string& email, const string& password, const string& name)
+    void createUser(const string& email, const string& password, const string& name, vector<string> associatedFridges)
     {
         for (const auto& user : listOfUsers)
         {
-            if (email == user.first.first)
+            if (email == user)
             {
                 cout << email << " is already associated with another user" << endl;
                 return;
@@ -202,47 +275,6 @@ public:
 
 private:
     string filename;
-    vector<pair<pair<string, string>, string>> listOfUsers;
+    vector<User> listOfUsers;
 };
 
-// database for fridge and their values, users and their items connected to fridge
-/*
-class Fridge
-{
-public:
-    FridgeUsers(const string& filename) : fridgeName(filename)
-    {
-        ifstream file(filename);
-
-        if (file.is_open())
-        {
-            listOfUsers.clear();
-
-            string line;
-
-            while(getline(file, line))
-            {
-                stringstream data(line);
-                string email, password, name;
-                getline(data, email, ',');
-                getline(data, password, ',');
-                getline(data, name, ',');
-
-                createUser(email, password, name);
-            }
-
-            file.close();
-        }
-        else
-        {
-            ofstream createFile(filename);
-            createFile.close();
-        }
-    }
-
-private:
-    string fridgeName;
-    string volume;
-    string 
-};
-*/
