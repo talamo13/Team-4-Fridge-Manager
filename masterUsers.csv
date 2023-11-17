@@ -1,11 +1,11 @@
-alice@email.com,alicetest123,Alice Johnson,KitchenMaster-CoolTech Deluxe
-bob@email.com,bobtest123,Bob Smith,CoolTech Deluxe-IceMax Pro
-charlie@email.com,charlietest123,Charlie Brown,IceMax Pro-KitchenMaster
-diana@email.com,dianatest123,Diana Miller,KitchenMaster
-eva@email.com,evatest123,Eva White,CoolTech Deluxe
-frank@email.com,franktest123,Frank Davis,IceMax Pro
-grace@email.com,gracetest123,Grace Turner,KitchenMaster-CoolTech Deluxe-IceMax Pro
-henry@email.com,henrytest123,Henry Wilson,CoolTech Deluxe
-ivy@email.com,ivytest123,Ivy Green,IceMax Pro-KitchenMaster
-jackie@email.com,jackietest123,Jackie Lee,KitchenMaster-CoolTech Deluxe
-chickens@gmail.com,asdfasdf,Chicken Man,CoolTech Deluxe-IceMax Pro
+alice@email.com,alicetest123,Alice Johnson,KitchenMaster-CoolTech Deluxe,None
+bob@email.com,bobtest123,Bob Smith,CoolTech Deluxe-IceMax Pro,Shellfish
+charlie@email.com,charlietest123,Charlie Brown,IceMax Pro-KitchenMaster,Peanut
+diana@email.com,dianatest123,Diana Miller,KitchenMaster,Tree Nuts-Peanut
+eva@email.com,evatest123,Eva White,CoolTech Deluxe,None
+frank@email.com,franktest123,Frank Davis,IceMax Pro,None
+grace@email.com,gracetest123,Grace Turner,KitchenMaster-CoolTech Deluxe-IceMax Pro,None
+henry@email.com,henrytest123,Henry Wilson,CoolTech Deluxe,Wheat
+ivy@email.com,ivytest123,Ivy Green,IceMax Pro-KitchenMaster,Milk
+jackie@email.com,jackietest123,Jackie Lee,KitchenMaster-CoolTech Deluxe,None
+chickens@gmail.com,asdfasdf,Chicken Man,CoolTech Deluxe-IceMax Pro,None
