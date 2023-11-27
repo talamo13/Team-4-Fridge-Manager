@@ -4,18 +4,20 @@
 int main()
 {
     // Back-End
-    UserProfiles userList("masterUsers.csv"); // loads database for ALL users
+    UserProfiles userList; // loads database for ALL users
+    ItemsDatabase savedItems; // loads database for saved items
 
-    vector<string> fridges = {"None"};
-    vector<string> allergies = {"Tomatoes"};
+    FridgesDatabase fridges;
+
+    Fridge kitchenMasterTest = fridges.getFridges()[0];
     
-    userList.deleteUser("chickens@gmail.com");
-
-    userList.addUser("chickens@gmail.com", "chickens123", "Chicken Man", fridges, allergies);
-
-    userList.displayUsers();
+    for (const auto& section : kitchenMasterTest.getSections())
+    {
+        cout << section.getSectionName() << endl;
+    }
 
     
+
     // specified fridge associated users implementation database
 
     // specified fridge items in fridge 
