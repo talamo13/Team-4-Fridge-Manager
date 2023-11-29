@@ -13,6 +13,11 @@ using namespace std;
 class User
 {
 public:
+    User() : email(""), password(""), name("")
+    {
+
+    }
+
     User(const string& email, const string& password, const string& name, 
          vector<string> associatedAllergies) : email(email),
          password(password), name(name), associatedAllergies(associatedAllergies)
@@ -151,11 +156,21 @@ private:
 class Section
 {
 public:
+    Section() : name(""), length(0), width(0), height(0)
+    {
+
+    }
+
     Section(const string& name, const User& owner, double length, double width, 
             double height, vector<Item>& items) : name(name), owner(owner), 
             length(length), width(width), height(height), items(items)
     {
-    
+        volume = length * width * height;
+        
+        for (const auto& item : items)
+        {
+            remainingVolume += item.getItemVolume();
+        }
     }
 
     void setSectionName(const string& sectionName)

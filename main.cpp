@@ -10,18 +10,26 @@ int main()
     FridgesDatabase fridges;
 
     Fridge kitchenMasterTest = fridges.getFridges()[0];
+    Section sectionTest;
     
-    string addedItemName = "Shellfish";
+    string addedItemName = "potato";
     string sectionName = "Middle Shelf";
     Item addedItem(addedItemName, 2, 3, 3, 20);
+    
+    // for (const auto& section : kitchenMasterTest.getSections())
+    // {
+    //     cout << section.getSectionName() << endl;
+    // }
 
-    for (const auto& section : kitchenMasterTest.getSections())
+    sectionTest = kitchenMasterTest.getSections()[7];
+    for (const auto& item : sectionTest.getItems())
     {
-        cout << section.getSectionName() << endl;
+        cout << item.getItemName() << endl;
     }
 
-
     kitchenMasterTest.addItem(addedItem, sectionName);
+    
+    cout << kitchenMasterTest.getSections()[7].getItems()[1].getItemName() << endl;
 
     for (const auto& user : userList.getUsers())
     {
