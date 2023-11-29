@@ -314,13 +314,6 @@ public:
         {
             if (sectionName == section.getSectionName())
             {
-                if ((find(section.getSectionOwner().getAllergies().begin(), 
-                section.getSectionOwner().getAllergies().end(), item.getItemName()) 
-                != section.getSectionOwner().getAllergies().end()))
-                {
-                    cout << "There is a fridge user who is allergic to this item." << endl;
-                    return;
-                }
                 section.addItem(item);
                 return;
             }
