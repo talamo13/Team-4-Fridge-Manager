@@ -227,7 +227,12 @@ public:
         return remainingVolume;
     }
 
-    vector<Item> getItems() const
+    vector<Item>& getItems()
+    {
+        return items;
+    }
+
+    const vector<Item>& getItems() const
     {
         return items;
     }
@@ -323,13 +328,13 @@ public:
         return totalCapacity;
     }
 
-    void addItem(Item& item, const string& sectionName)
+    void addItem(const Item& item, Section& section)
     {
-        for (auto section : sections)
+        for (auto& i : sections)
         {
-            if (sectionName == section.getSectionName())
+            if (section.getSectionName() == section.getSectionName())
             {
-                section.addItem(item);
+                section.getItems().push_back(item);
                 return;
             }
         }

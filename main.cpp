@@ -13,8 +13,10 @@ int main()
     Section sectionTest;
     
     string addedItemName = "potato";
-    string sectionName = "Middle Shelf";
     Item addedItem(addedItemName, 2, 3, 3, 20);
+
+    string sectionName = "Middle Shelf";
+    
     
     // for (const auto& section : kitchenMasterTest.getSections())
     // {
@@ -26,10 +28,21 @@ int main()
     {
         cout << item.getItemName() << endl;
     }
-
-    kitchenMasterTest.addItem(addedItem, sectionName);
     
-    cout << kitchenMasterTest.getSections()[7].getItems()[1].getItemName() << endl;
+    cout << "Before add:\n";
+    kitchenMasterTest.addItem(addedItem, sectionTest);
+
+    cout << "After add:\n";
+    cout << kitchenMasterTest.getSections()[7].getItems().size();
+
+    
+    for (const auto& item : sectionTest.getItems())
+    {
+        cout << item.getItemName() << endl;
+    }
+
+
+
 
     for (const auto& user : userList.getUsers())
     {
