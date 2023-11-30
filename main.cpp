@@ -13,54 +13,73 @@ int main()
 
     FridgesDatabase fridges;
 
-    Fridge kitchenMasterTest = fridges.getFridges()[0];
+    Fridge kitchenMasterTest = fridges.getFridges()[0]; // 71360 volume total
     Section sectionTest;
     
-    string addedItemName = "potato";
+    string addedItemName = "Shellfish";
     Item addedItem(addedItemName, 2, 3, 3, 20);
 
     string sectionName = "Middle Shelf";
-    
-    // for (const auto& section : kitchenMasterTest.getSections())
-    // {
-    //     cout << section.getSectionName() << endl;
-    // }
 
-    sectionTest = kitchenMasterTest.getSections()[7];
-    
-    cout << kitchenMasterTest.getSections()[7].getSectionName() << endl;
-
-    for (const auto& item : kitchenMasterTest.getSections()[7].getItems())
-    {
-        cout << item.getItemName() << endl;
-    }
-    
-    cout << "Before add:\n";
+    cout << "SECTION before: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
     kitchenMasterTest.addItem(addedItem, sectionName);
+    cout << "SECTION after add: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
 
-    cout << "After add:\n";
-    cout << kitchenMasterTest.getSections()[7].getItems().size();
+    cout << "SECTION before remove: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
+    kitchenMasterTest.removeItem(addedItemName, sectionName);
+    cout << "SECTION after remove: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
+
+
 
     
-    for (const auto& item : kitchenMasterTest.getSections()[7].getItems())
-    {
-        cout << item.getItemName() << endl;
-    }
 
 
 
+    // sectionTest = kitchenMasterTest.getSections()[7];
+    
+    // cout << "-----Default-----      " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
+    // for (const auto& item : kitchenMasterTest.getSections()[7].getItems())
+    // {
+    //     cout << item.getItemName() << endl;
+    // }
+    // cout << endl;
+    
+    // kitchenMasterTest.addItem(addedItem, sectionName);
+    // cout << "Item added.\n" << endl ;
+    
 
-    for (const auto& user : userList.getUsers())
-    {
-        for (const auto& allergy: user.getAllergies())
-        {
-            if (addedItem.getItemName() == allergy)
-            {
-                kitchenMasterTest.removeItem(addedItem.getItemName(), sectionName);
-                cout << "A user of this fridge is allergic to this item.\n";
-            }
-        }
-    }
+
+    // cout << "-----After Add-----      " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
+    // for (const auto& item : kitchenMasterTest.getSections()[7].getItems())
+    // {
+    //     cout << item.getItemName() << endl;
+    // }
+    // cout << endl;
+
+
+
+    // kitchenMasterTest.removeItem("Shellfish", sectionName);
+    // cout << "Item removed.\n" << endl ;
+
+    // cout << "-----After Remove-----" << endl;
+    // for (const auto& item : kitchenMasterTest.getSections()[7].getItems())
+    // {
+    //     cout << item.getItemName() << endl;
+    // }
+    // cout << endl;
+
+
+    // for (const auto& user : userList.getUsers())
+    // {
+    //     for (const auto& allergy: user.getAllergies())
+    //     {
+    //         if (addedItem.getItemName() == allergy)
+    //         {
+    //             kitchenMasterTest.removeItem(addedItem.getItemName(), sectionName);
+    //             cout << "A user of this fridge is allergic to this item.\n";
+    //         }
+    //     }
+    // }
 
     // specified fridge associated users implementation database
 
@@ -74,7 +93,7 @@ int main()
     // selectChoices();
 
 
-
+    // fridges.saveToFile();
     userList.saveToFile(); // always save to file to update databases
 
     return 0;
