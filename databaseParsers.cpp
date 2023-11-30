@@ -328,11 +328,11 @@ public:
         return totalCapacity;
     }
 
-    void addItem(const Item& item, Section& section)
+    void addItem(const Item& item, const string& sectionName)
     {
-        for (auto& i : sections)
+        for (auto& section : sections)
         {
-            if (section.getSectionName() == section.getSectionName())
+            if (sectionName == section.getSectionName())
             {
                 section.getItems().push_back(item);
                 return;
@@ -376,7 +376,12 @@ public:
         return users;
     }
 
-    vector<Section> getSections() const
+    vector<Section>& getSections()
+    {
+        return sections;
+    }
+
+    const vector<Section>& getSections() const
     {
         return sections;
     }

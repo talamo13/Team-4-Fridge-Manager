@@ -1,5 +1,9 @@
+#include <iostream>
+
 #include "databaseParsers.cpp"
 #include "refrigeratorMenu.cpp"
+
+using namespace std;
 
 int main()
 {
@@ -17,26 +21,28 @@ int main()
 
     string sectionName = "Middle Shelf";
     
-    
     // for (const auto& section : kitchenMasterTest.getSections())
     // {
     //     cout << section.getSectionName() << endl;
     // }
 
     sectionTest = kitchenMasterTest.getSections()[7];
-    for (const auto& item : sectionTest.getItems())
+    
+    cout << kitchenMasterTest.getSections()[7].getSectionName() << endl;
+
+    for (const auto& item : kitchenMasterTest.getSections()[7].getItems())
     {
         cout << item.getItemName() << endl;
     }
     
     cout << "Before add:\n";
-    kitchenMasterTest.addItem(addedItem, sectionTest);
+    kitchenMasterTest.addItem(addedItem, sectionName);
 
     cout << "After add:\n";
     cout << kitchenMasterTest.getSections()[7].getItems().size();
 
     
-    for (const auto& item : sectionTest.getItems())
+    for (const auto& item : kitchenMasterTest.getSections()[7].getItems())
     {
         cout << item.getItemName() << endl;
     }
