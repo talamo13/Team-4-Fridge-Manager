@@ -5,6 +5,9 @@
 
 using namespace std;
 
+// Function declaration(s)
+void addItemToFridge(UserProfiles&, Fridge&, Item&, Section&);
+
 int main()
 {
     // Back-End
@@ -14,26 +17,21 @@ int main()
     FridgesDatabase fridges;
 
     Fridge kitchenMasterTest = fridges.getFridges()[0]; // 71360 volume total
-    Section sectionTest;
     
-    string addedItemName = "Shellfish";
-    Item addedItem(addedItemName, 2, 3, 3, 20);
+    Section sectionTest = kitchenMasterTest.getSections()[7];
 
-    string sectionName = "Middle Shelf";
+    // TEST CASES FOR ADDING ITEMS
+    Item normalItem("normal", 1, 1, 2, 500); // Item 1: normal, no problem
+    Item allergicItem("Shellfish", 1, 2, 3, 400); // Item 2: a user is allergic
+    Item bigItem("nuclear bomb", 2000, 4000, 2, 3); // Item 3: item is too big
+    Item allergicBigItem("Shellfish that is nuclear", 2000, 4000, 2, 3); // Item 4: has allergy name 
+    Item allergicSmallItem("Shellfish that is sooo big", 1, 1, 1, 2); // Item 5: has allergy name
 
-    cout << "SECTION before: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
-    kitchenMasterTest.addItem(addedItem, sectionName);
-    cout << "SECTION after add: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
-
-    cout << "SECTION before remove: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
-    kitchenMasterTest.removeItem(addedItemName, sectionName);
-    cout << "SECTION after remove: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
-
-
-
-    
-
-
+    addItemToFridge(userList, kitchenMasterTest, normalItem, sectionTest);
+    addItemToFridge(userList, kitchenMasterTest, allergicItem, sectionTest);
+    addItemToFridge(userList, kitchenMasterTest, bigItem, sectionTest);
+    addItemToFridge(userList, kitchenMasterTest, allergicBigItem, sectionTest);
+    addItemToFridge(userList, kitchenMasterTest, allergicSmallItem, sectionTest);
 
     // sectionTest = kitchenMasterTest.getSections()[7];
     
@@ -97,4 +95,33 @@ int main()
     userList.saveToFile(); // always save to file to update databases
 
     return 0;
+}
+
+// Function for adding item to fridge
+void addItemToFridge(UserProfiles& profiles, Fridge& fridge, Item& item, Section& section)
+{
+    if (item.getLength() > section.getLength() || item.getWidth() > section.getWidth() ||
+    item.getHeight() > section.getHeight())
+    {
+        cout << item.getItemName() << " is too large for the " 
+        << section.getSectionName() << ".\n";
+        return;
+    }
+
+    for (const auto& user : profiles.getUsers())
+    {
+        for (const auto& allergy: user.getAllergies())
+        {
+            if (item.getItemName().find(allergy) != std::string::npos)
+            {
+                cout << "A user of this fridge is allergic to " << allergy
+                << ".\n";
+                fridge.removeItem(item.getItemName(), section.getSectionName());
+                return;
+            }
+        }
+    }
+
+    cout << item.getItemName() << " was successfully added to the " 
+    << section.getSectionName() << ".\n";
 }
