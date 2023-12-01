@@ -13,11 +13,6 @@ using namespace std;
 class User
 {
 public:
-    User() : email(""), password(""), name("")
-    {
-
-    }
-
     User(const string& email, const string& password, const string& name, 
          vector<string> associatedAllergies) : email(email),
          password(password), name(name), associatedAllergies(associatedAllergies)
@@ -85,9 +80,10 @@ private:
 class Item
 {
 public:
-    Item(const string& name, double length, double width, double height, int expiration) : 
+    Item(const string& name, double length, double width, double height, 
+    int expiration, const string& type) : 
          name(name), length(length), width(width), height(height), expiration(expiration),
-         volume(length * width * height)
+         volume(length * width * height), type(type)
     {
         
     }
@@ -117,6 +113,11 @@ public:
         return name;
     }
 
+    string getItemType() const 
+    {
+        return type;
+    }
+
     int getExpiration() const
     {
         return expiration;
@@ -142,13 +143,9 @@ public:
         return volume;
     }
 
-    bool operator==(const Item& other) const
-    {
-        return (name == other.name);
-    }
-
 private:
     string name;
+    string type;
 
     double length;
     double width;
@@ -161,23 +158,11 @@ private:
 class Section
 {
 public:
-    Section() : name(""), length(0), width(0), height(0)
-    {
-
-    }
-
     Section(const string& name, const User& owner, double length, double width, 
             double height, vector<Item>& items) : name(name), owner(owner), 
             length(length), width(width), height(height), items(items)
     {
-        volume = 0;
-        volume = length * width * height;
-
-        usedVolume = 0;
-        for (const auto& item : items)
-        {
-            usedVolume += item.getItemVolume();
-        }
+    
     }
 
     void setSectionName(const string& sectionName)
@@ -194,16 +179,6 @@ public:
         volume = length * width * height;
     }
     
-    void updateSectionVolume()
-    {
-        volume = 0;
-
-        for (const auto& item : items)
-        {
-            volume += item.getItemVolume();
-        }
-    }
-
     void setSectionOwner(const User& sectionOwner)
     {
         owner = sectionOwner;
@@ -239,34 +214,23 @@ public:
         return height;
     }
 
-    double getUsedVolume() const 
-    {
-        return usedVolume;
-    }
-    
     double getRemainingVolume() const
     {
-        return volume - usedVolume;
+        return remainingVolume;
     }
 
-    vector<Item>& getItems()
-    {
-        return items;
-    }
-
-    const vector<Item>& getItems() const
+    vector<Item> getItems() const
     {
         return items;
     }
 
     void addItem(const Item& item)
     {
-        usedVolume += item.getItemVolume();
-        
-        if (volume - usedVolume < 0)
+        remainingVolume -= item.getItemVolume();
+        if (remainingVolume < 0)
         {
             cout << "Storage full, please remove an item." << endl;
-            usedVolume -= item.getItemVolume();
+            remainingVolume += item.getItemVolume();
         }
         else
         {
@@ -274,19 +238,19 @@ public:
         }
     }
 
-    void removeItem(const Item& itemToDelete)
+    void removeItem(const Item& item)
     {
-        auto it = find(items.begin(), items.end(), itemToDelete);
-
-        if (it != items.end())
-        {            
-            items.erase(it);
-            usedVolume -= itemToDelete.getItemVolume();
-        }
-        else
+        for (size_t i = 0; i < items.size(); i++)
         {
-            cout << "Item not found in the section." << endl;
+            if (items[i].getItemName() == item.getItemName())
+            {
+                remainingVolume += item.getItemVolume();
+                items.erase(items.begin() + i);
+                return;
+            }
         }
+
+        cout << "Item not found in the section." << endl;
     }
 
 private:
@@ -298,7 +262,7 @@ private:
     double height;
     double volume;
 
-    double usedVolume;
+    double remainingVolume;
 
     vector<Item> items;
 };
@@ -312,16 +276,12 @@ public:
     Fridge(const string& name, const double length, const double width, const double height, 
            double remainingCapacity, const double totalCapacity, vector<Section>& sections) : 
            name(name), length(length), width(width), height(height),
-           totalCapacity(length * width * height), sections(sections)
+           remainingCapacity(remainingCapacity), totalCapacity(length * width * height),
+           sections(sections)
     {
         for (const auto& section : sections)
         {
             users.push_back(section.getSectionOwner());
-            
-            for (const auto& item : section.getItems())
-            {
-                usedCapacity += item.getItemVolume();
-            }
         }
     }
 
@@ -345,9 +305,9 @@ public:
         return height;
     }
 
-    double getUsedCapacity() const
+    double getRemainingCapacity() const
     {
-        return usedCapacity;
+        return remainingCapacity;
     }
     
     double getTotalCapacity() const
@@ -355,14 +315,13 @@ public:
         return totalCapacity;
     }
 
-    void addItem(const Item& item, const string& sectionName)
+    void addItem(Item& item, const string& sectionName)
     {
-        for (auto& section : sections)
+        for (auto section : sections)
         {
             if (sectionName == section.getSectionName())
             {
                 section.addItem(item);
-                usedCapacity += item.getItemVolume();
                 return;
             }
         }
@@ -371,19 +330,14 @@ public:
 
     void removeItem(const string& itemName, const string& sectionName)
     {
-        for (auto& section : sections)
+        for (auto section : sections)
         {
             if (sectionName == section.getSectionName())
             {
-                for (auto& item : section.getItems())
+                for (auto item : section.getItems())
                 {
-                    if (item.getItemName() == itemName)
-                    {
-                        section.removeItem(item); 
-
-                        usedCapacity -= item.getItemVolume();
-                        return;
-                    }
+                    section.removeItem(item);
+                    return;
                 }
             }
         }
@@ -409,12 +363,7 @@ public:
         return users;
     }
 
-    vector<Section>& getSections()
-    {
-        return sections;
-    }
-
-    const vector<Section>& getSections() const
+    vector<Section> getSections() const
     {
         return sections;
     }
@@ -425,7 +374,7 @@ private:
     double length;
     double width;
     double height;
-    double usedCapacity;
+    double remainingCapacity;
     double totalCapacity;
 
     vector<Section> sections;
@@ -616,19 +565,21 @@ public:
         while(getline(file, line))
         {
             stringstream data(line);
-            string itemName, strLength, strWidth, strHeight, strExpiration;
+            string itemName, strLength, strWidth, strHeight, 
+            strExpiration, itemType;
             getline(data, itemName, ',');
             getline(data, strLength, ',');
             getline(data, strWidth, ',');
             getline(data, strHeight, ',');
             getline(data, strExpiration, ',');
+            getline(data, itemType, ',');
 
             double length = stod(strLength);
             double width = stod(strWidth);
             double height = stod(strHeight);
             int expiration = stoi(strExpiration);
 
-            listOfItems.push_back(Item(itemName, length, width, height, expiration));
+            listOfItems.push_back(Item(itemName, length, width, height, expiration, itemType));
         }
 
         file.close();
@@ -639,7 +590,8 @@ public:
         return listOfItems;
     }
 
-    void addItem(const string& itemName, double length, double width, double height, int expiration)
+    void addItem(const string& itemName, double length, double width, 
+    double height, int expiration, const string& itemType)
     {
         for (const auto& item : listOfItems)
         {
@@ -650,7 +602,7 @@ public:
             }
         }
 
-        listOfItems.push_back(Item(itemName, length, width, height, expiration));
+        listOfItems.push_back(Item(itemName, length, width, height, expiration, itemType));
         cout << itemName << " has been added!" << endl;
     }
 
@@ -822,7 +774,7 @@ public:
         {
             file << fridge.getFridgeName() << "," << fridge.getLength() << "," 
                  << fridge.getWidth() << "," << fridge.getHeight() << "," 
-                 << fridge.getUsedCapacity() << "," << fridge.getTotalCapacity() << "\n";
+                 << fridge.getRemainingCapacity() << "," << fridge.getTotalCapacity() << "\n";
 
             ofstream fridgeFile("../Fridges/" + fridge.getFridgeName() + ".csv");
             
