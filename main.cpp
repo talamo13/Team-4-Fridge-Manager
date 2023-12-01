@@ -21,19 +21,9 @@ int main()
 
     string sectionName = "Middle Shelf";
 
-    cout << "SECTION before: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
     kitchenMasterTest.addItem(addedItem, sectionName);
-    cout << "SECTION after add: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
 
-    cout << "SECTION before remove: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
     kitchenMasterTest.removeItem(addedItemName, sectionName);
-    cout << "SECTION after remove: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
-
-
-
-    
-
-
 
     // sectionTest = kitchenMasterTest.getSections()[7];
     

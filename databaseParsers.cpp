@@ -760,6 +760,7 @@ public:
                 double sectionHeight = stod(strSectionHeight);
 
                 string items;
+                vector<string> addedItems;
                 vector<Item> associatedItems;
                 associatedItems.clear();
                 getline(fridgeData, items, ',');
@@ -773,8 +774,33 @@ public:
                         if(item == existingItem.getItemName())
                         {
                             associatedItems.push_back(existingItem);
+                            addedItems.push_back(existingItem.getItemName());
                         }
-                    }    
+                    }   
+                    
+                    if (item != "None")
+                    {
+                        auto it = find(addedItems.begin(), addedItems.end(), item);
+
+                        if (it == addedItems.end())
+                        {
+                            stringstream itemNotDatabase(item);
+                            string itemName, strItemLength, strItemWidth, strItemHeight, strItemExpiration;
+                            getline(itemNotDatabase, itemName, '~');
+                            getline(itemNotDatabase, strItemLength, '~');
+                            getline(itemNotDatabase, strItemWidth, '~');
+                            getline(itemNotDatabase, strItemHeight, '~');
+                            getline(itemNotDatabase, strItemExpiration, '~');
+
+                            
+                            double itemLength = stod(strItemLength);
+                            double itemWidth = stod(strItemWidth);
+                            double itemHeight = stod(strItemHeight);
+                            int itemExpiration = stoi(strItemExpiration);
+                            
+                            associatedItems.push_back(Item(itemName, itemLength, itemWidth, itemHeight, itemExpiration));
+                        }
+                    } 
                 }
                 
                 User sectionUser = savedUsers.getUsers()[0];
