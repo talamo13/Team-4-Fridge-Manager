@@ -1,33 +1,33 @@
-Water Bottle,2.62,2.62,7.8,0
-Milk,4,4,9.5,14-19
-Milk Gallon,6,6,10.75,14-19
-Soda Can, 2.68,2.68,4.73,273
-Eggs,1.71,1.71,2.2,30
-Cheese,3,4,2.5,60
-Yogurt,3.64,3.64,2.20,14
-Butter,4.22,2.5,1.39,90
-Fresh Vegetables,12,8,10,7-14
-Tomato,2.97,2.2,2.2,10
-Cucumber,2.04,2.04,8.34,7-14
-Carrot,1.24,1.24,9,12
-Avocado,2.77,2.77,3.94,9
-Onion,3.66,3.66,3.29,10
-Fresh Fruits,8,8,8,5-14
-Lemon,2.1,2.1,2.1,15
-Apple,2.72,2.73,2.68,10
-Banana,7.54,1.61,1.61,7-10
-Orange,2.76,2.76,3.24,7-12
-Deli Meat,8,8,4,7
-Juice,8,4,10,14
-Takeout,9,9,3.5,3
-Mayonnaise,7,7,10,60
-Sausages,8,4,5,7
-Pickles,5,5,12,30
-Applesauce,6,6,8,180
-Sour Cream,7,7,7,14
-Mustard,4,4,8,90
-Pudding Cups,5,5,5,30
-Salad Dressing,6,6,12,60
-Hummus,7,7,7,14
-Cottage Cheese,8,8,8,14
-Meat,5,5,5,25
+Water Bottle,2.62,2.62,7.8,0,Drink
+Milk,4,4,9.5,14,Dairy
+Milk Gallon,6,6,10.75,14,Dairy
+Soda Can, 2.68,2.68,4.73,273,Drink
+Eggs,1.71,1.71,2.2,30,Protein
+Cheese,3,4,2.5,60,Dairy
+Yogurt,3.64,3.64,2.20,14,Dairy
+Butter,4.22,2.5,1.39,90,Dairy
+Fresh Vegetables,12,8,10,7,Vegetable
+Tomato,2.97,2.2,2.2,10,Fruit
+Cucumber,2.04,2.04,8.34,7,Fruit
+Carrot,1.24,1.24,9,12,Vegetable
+Avocado,2.77,2.77,3.94,9,Fruit
+Onion,3.66,3.66,3.29,10,Vegetable
+Fresh Fruits,8,8,8,5,Fruit
+Lemon,2.1,2.1,2.1,15,Fruit
+Apple,2.72,2.73,2.68,10,Fruit
+Banana,7.54,1.61,1.61,7,Fruit
+Orange,2.76,2.76,3.24,7,Fruit
+Deli Meat,8,8,4,7,Meat
+Juice,8,4,10,14,Drink
+Takeout,9,9,3.5,3,Unknown
+Mayonnaise,7,7,10,60,Condiment
+Sausages,8,4,5,7,Meat
+Pickles,5,5,12,30,Vegetable
+Applesauce,6,6,8,180,Condiment
+Sour Cream,7,7,7,14,Condiment
+Mustard,4,4,8,90,Condiment
+Pudding Cups,5,5,5,30,Dessert
+Salad Dressing,6,6,12,60,Condiment
+Hummus,7,7,7,14,Condiment
+Cottage Cheese,8,8,8,14,Dairy
+Meat,5,5,5,25,Meat

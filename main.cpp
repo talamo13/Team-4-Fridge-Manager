@@ -5,6 +5,9 @@
 
 using namespace std;
 
+// Function declaration(s)
+void addItemToFridge(UserProfiles&, Fridge&, Item&, Section&);
+
 int main()
 {
     // Back-End
@@ -21,9 +24,19 @@ int main()
 
     string sectionName = "Middle Shelf";
 
+    cout << "SECTION before: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
     kitchenMasterTest.addItem(addedItem, sectionName);
+    cout << "SECTION after add: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
 
+    cout << "SECTION before remove: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
     kitchenMasterTest.removeItem(addedItemName, sectionName);
+    cout << "SECTION after remove: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
+
+
+
+    
+
+
 
     // sectionTest = kitchenMasterTest.getSections()[7];
     
@@ -87,4 +100,33 @@ int main()
     userList.saveToFile(); // always save to file to update databases
 
     return 0;
+}
+
+// Function for adding item to fridge
+void addItemToFridge(UserProfiles& profiles, Fridge& fridge, Item& item, Section& section)
+{
+    if (item.getLength() > section.getLength() || item.getWidth() > section.getWidth() ||
+    item.getHeight() > section.getHeight())
+    {
+        cout << item.getItemName() << " is too large for the " 
+        << section.getSectionName() << ".\n";
+        return;
+    }
+
+    for (const auto& user : profiles.getUsers())
+    {
+        for (const auto& allergy: user.getAllergies())
+        {
+            if (item.getItemName().find(allergy) != std::string::npos)
+            {
+                cout << "A user of this fridge is allergic to " << allergy
+                << ".\n";
+                return;
+            }
+        }
+    }
+
+    cout << item.getItemName() << " was successfully added to the " 
+    << section.getSectionName() << ".\n";
+    fridge.addItem(item, section.getSectionName());
 }
