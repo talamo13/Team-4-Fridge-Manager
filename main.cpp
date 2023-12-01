@@ -17,26 +17,15 @@ int main()
     FridgesDatabase fridges;
 
     Fridge kitchenMasterTest = fridges.getFridges()[0]; // 71360 volume total
+
+
+    
     Section sectionTest;
     
     string addedItemName = "Shellfish";
-    Item addedItem(addedItemName, 2, 3, 3, 20);
+    Item addedItem(addedItemName, 2, 3, 3, 20, "Seafood");
 
     string sectionName = "Middle Shelf";
-
-    cout << "SECTION before: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
-    kitchenMasterTest.addItem(addedItem, sectionName);
-    cout << "SECTION after add: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
-
-    cout << "SECTION before remove: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
-    kitchenMasterTest.removeItem(addedItemName, sectionName);
-    cout << "SECTION after remove: " << kitchenMasterTest.getSections()[7].getUsedVolume() << endl;
-
-
-
-    
-
-
 
     // sectionTest = kitchenMasterTest.getSections()[7];
     
