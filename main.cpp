@@ -2,6 +2,7 @@
 
 #include "databaseParsers.cpp"
 #include "refrigeratorMenu.cpp"
+#include "login.cpp"
 
 using namespace std;
 
@@ -12,6 +13,14 @@ int main()
 {
     // Back-End
     UserProfiles userList; // loads database for ALL users
+
+    // check login here first
+
+    loginChoices();
+
+
+    // after validated open all needed databases
+
     ItemsDatabase savedItems; // loads database for saved items
 
     FridgesDatabase fridges;
