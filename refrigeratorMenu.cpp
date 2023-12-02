@@ -1,16 +1,18 @@
 #include <iostream>
-
+#include "databaseParsers.cpp"
 using namespace std;
 
 // Function definitions
-// Function definition displayMenu
+void addItemToFridge(UserProfiles&, Fridge&, Item&, Section&);
+
+// displayMenu
 void displayMenu()
 {
     cout << "\n**************************************************************\n"
     << "                          MAIN MENU\n"
     << "**************************************************************\n";
 	cout << "\nSelect one of the following:\n"
-		<< "    1: Add refrigerator\n"
+		<< "    1: Add item\n"
 		<< "    2: Show current items\n"
 		<< "    3: Show expiration dates\n"
 		<< "    4: Remaining space\n"
@@ -20,9 +22,12 @@ void displayMenu()
 }
 
 // Function definition selectChoices
-void selectChoices()
+void selectChoices(UserProfiles& userList, ItemsDatabase& savedItems, 
+FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
 {
-    int choice = 0;
+    int choice = 0, sectionCounter = 0;
+    kitchenMasterTest = fridges.getFridges()[0];
+    Item normalItem("normal", 1, 1, 2, 500, "Unknown");
 
     while (choice != 7)
     {
@@ -31,11 +36,48 @@ void selectChoices()
 
         switch (choice)
         {
-            // Add refrigerator, ask for lxwxh of total refrigerator size + shelves
-            // or system can ask for code for a pre-existing registered refrigerator
+            // Add an item
             case 1: 
             {
-                // addFridgeChoices();
+                bool noFoundSection = true;
+                string givenSection, itemName, itemType;
+                double itemLength, itemWidth, itemHeight; 
+                while (noFoundSection)
+                {
+                    cout << "\nWhich section would you like to add to? Type its name: ";
+
+                    for (const Section sections : username.sectionTests)
+                    {
+                        cout << sections.getSectionName() << endl;
+                    }
+
+                    cin >> givenSection;
+                    for (const Section sections : username.sectionTests)
+                    {
+                        if (givenSection == sections.getSectionName())
+                        {
+                            sectionTest = kitchenMasterTest.getSections()[sectionCounter];
+                            noFoundSection = false;
+                            break;
+                        }
+                        sectionCounter++;
+                    }
+                }
+
+                cout << "\nEnter the name of the food: ";
+                cin >> itemName;
+                cout << "\nEnter the item length: ";
+                cin >> itemLength;
+                cout << "\nEnter the item width: ";
+                cin >> itemWidth;
+                cout << "\nEnter the item height: ";
+                cin >> itemHeight;
+                cout << "\nEnter the item type: ";
+                cin >> itemType;
+
+                addItemToFridge(userList, kitchenMasterTest, normalItem, sectionTest);
+                // Need to update section volume after adding. 
+                userList.saveToFile();
                 displayMenu();
                 break;
             }
@@ -177,4 +219,33 @@ void addFridgeChoices()
     {
         cout << "\nPlease input a valid option: ";
     }
+}
+
+// Function for adding item to fridge
+void addItemToFridge(UserProfiles& profiles, Fridge& fridge, Item& item, Section& section)
+{
+    if (item.getLength() > section.getLength() || item.getWidth() > section.getWidth() ||
+    item.getHeight() > section.getHeight())
+    {
+        cout << item.getItemName() << " is too large for the " 
+        << section.getSectionName() << ".\n";
+        return;
+    }
+
+    for (const auto& user : profiles.getUsers())
+    {
+        for (const auto& allergy: user.getAllergies())
+        {
+            if (item.getItemName().find(allergy) != std::string::npos)
+            {
+                cout << "A user of this fridge is allergic to " << allergy
+                << ".\n";
+                return;
+            }
+        }
+    }
+
+    cout << item.getItemName() << " was successfully added to the " 
+    << section.getSectionName() << ".\n";
+    fridge.addItem(item, section.getSectionName());
 }
