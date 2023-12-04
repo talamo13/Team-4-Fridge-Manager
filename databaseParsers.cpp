@@ -813,7 +813,7 @@ public:
                     } 
                 }
                 
-                User sectionUser = savedUsers.getUsers()[0];
+                User sectionUser;
 
                 for (const auto& user : savedUsers.getUsers())
                 {
