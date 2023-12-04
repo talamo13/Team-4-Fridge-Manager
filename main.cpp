@@ -2,9 +2,7 @@
 #include <string>
 #include <limits>
 
-//#include "databaseParsers.cpp"
 #include "refrigeratorMenu.cpp"
-//#include "login.cpp"
 
 using namespace std;
 
@@ -19,7 +17,6 @@ User& loginChoices(vector<User>& userVec);
 
 int main()
 {
-    // Back-End
     UserProfiles userList; // loads database for ALL users
 
     // check login here first
@@ -30,18 +27,13 @@ int main()
 
     
 
-    //loginChoices();
-
-
-    // after validated open all needed databases
-
+    // after login validation, load all databases
     ItemsDatabase savedItems; // loads database for saved items
-
-    FridgesDatabase fridges;
-
+    FridgesDatabase fridges; // loads database for saved fridges
     Fridge kitchenMasterTest = fridges.getFridges()[0]; // 71360 volume total
-
     Section sectionTest;
+
+    selectChoices(userList, loggedIn, savedItems, fridges, kitchenMasterTest, sectionTest);
     
     Item normalItem("normal", 1, 1, 2, 500, "Unknown"); // Item 1: normal, no problem
     Item allergicItem("Shellfish", 1, 2, 3, 400, "Fish"); // Item 2: a user is allergic
@@ -127,6 +119,7 @@ User& loginChoices(vector<User>& userVec)
          << "-------------------\n"
          << "1: Register for Fridge Manager\n"
          << "2: Login\n"
+         << "3: Exit\n"
          << "Selection: ";
 
     cin >> choices;
@@ -240,6 +233,16 @@ User& loginChoices(vector<User>& userVec)
             }
         }
         while(checkPass(userVec, email, password));
+    }
+    else if(choices == 3)
+    {
+        cout << "Goodbye!" << endl;
+        exit(0);
+    }
+    else
+    {
+        cout << "Please enter a valid option." << endl;
+        loginChoices(userVec);
     }
 
     static User defaultUser;
