@@ -155,13 +155,13 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 case 2:
                 {
                 // Variables
-                    bool noFoundSection, foundItem;
+                    bool noFoundSection = true, foundItem = false;
                     string givenSection, itemName;
                     int itemExpiration = 0, sectionCounter = 0, registeredChoice = 0;
 
                     while (noFoundSection)
                     {
-                        cout << "\nWhich section would you like to add to? \n";
+                        cout << "\nWhich section would you like to remove from? \n";
 
                         for (const Section sections : userSections)
                         {
@@ -192,9 +192,10 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                         // Display items
                         if (sectionTest.getItems().size() == 0)
                         {
-                            cout << "\nThere are no items in this section.";
+                            cout << "\nThere are no items in this section."
+                            << " Returning to menu.";
+                            foundItem = true;
                         }
-
                         else 
                         {
                             cout << "\nAll items in this section: ";
@@ -227,21 +228,23 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                                     break;
                                 }
                             }
-                        }
 
-                        cout << "\n\nAre you sure you want to remove this item?"
-                        << " Type 1 to confirm, and 2 to refuse.";
-                        do
-                        {
-                            cout << "\nChoice: ";
-                            cin >> registeredChoice;
-                        } while (registeredChoice != 1 && registeredChoice != 2);
+                            cout << "\n\nAre you sure you want to remove this item?"
+                            << " Type 1 to confirm, and 2 to refuse.";
+                            do
+                            {
+                                cout << "\nChoice: ";
+                                cin >> registeredChoice;
+                            } while (registeredChoice != 1 && registeredChoice != 2);
+                        }
 
                         // Removing the item.
                         if (registeredChoice == 1)
                         {
+                            cout << endl << itemName << " has been removed.";
                             kitchenMasterTest.removeItem(itemName, sectionTest.getSectionName());
                         }
+                        
                     }
 
                 displayMenu();
@@ -298,10 +301,18 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 {
                     for (const auto& items: sections.getItems())
                     {
-                        cout << "| " << setw(20) << left << items.getItemName()
-                        << " | " << setw(20) << left << items.getItemVolume() 
-                        << " | " << setw(22) << left << items.getExpiration()
-                        << " | " << setw(20) << left << items.getItemType() << endl;
+                        if (sections.getItems().size() == 0)
+                        {
+                            cout << "\nNo items in " << sections.getSectionName();
+                        }
+
+                        else
+                        {
+                            cout << "| " << setw(20) << left << items.getItemName()
+                            << " | " << setw(20) << left << items.getItemVolume() 
+                            << " | " << setw(22) << left << items.getExpiration()
+                            << " | " << setw(20) << left << items.getItemType() << endl;
+                        }
                     }
                 }
 
@@ -340,7 +351,7 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
             }
 
             // Log out
-            case 7:
+            case 6:
             {
                 cout << "\nYou have logged out.\n";
                 break;
