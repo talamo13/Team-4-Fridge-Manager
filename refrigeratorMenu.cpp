@@ -22,13 +22,20 @@ void displayMenu()
 }
 
 // Function definition selectChoices
-void selectChoices(UserProfiles& userList, ItemsDatabase& savedItems, 
+void selectChoices(UserProfiles& userList, User& user, ItemsDatabase& savedItems, 
 FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
 {
     int choice = 0, sectionCounter = 0;
     kitchenMasterTest = fridges.getFridges()[0];
     Item normalItem("normal", 1, 1, 2, 500, "Unknown");
-
+    vector<Section> userSections;
+    for (Section sections : kitchenMasterTest.getSections())
+    {
+        if (sections.getSectionOwner().getEmail() == user.getEmail())
+        {
+            userSections.push_back(sections);
+        }
+    }
     while (choice != 7)
     {
         cout << "\nSelect an option: "; 
@@ -46,13 +53,13 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 {
                     cout << "\nWhich section would you like to add to? Type its name: ";
 
-                    for (const Section sections : username.sectionTests)
+                    for (const Section sections : userSections)
                     {
                         cout << sections.getSectionName() << endl;
                     }
 
                     cin >> givenSection;
-                    for (const Section sections : username.sectionTests)
+                    for (const Section sections : userSections)
                     {
                         if (givenSection == sections.getSectionName())
                         {
@@ -77,7 +84,7 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
 
                 addItemToFridge(userList, kitchenMasterTest, normalItem, sectionTest);
                 // Need to update section volume after adding. 
-                userList.saveToFile();
+                // userList.saveToFile();
                 displayMenu();
                 break;
             }
