@@ -51,10 +51,10 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
             case 1: 
             {
                 // Variables
-                bool noFoundSection, alreadyRegistered = false;
+                bool noFoundSection = true, alreadyRegistered = false;
                 string givenSection, itemName, itemType;
                 double itemLength, itemWidth, itemHeight; 
-                int itemExpiration = 0, sectionCounter = 0, registeredChoice = 0;
+                int itemExpiration = 0, sectionCounter = 0, registeredChoice = 3;
 
                 while (noFoundSection)
                 {
@@ -129,7 +129,7 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                         }
                     }
 
-                    if (registeredChoice == 2)
+                    if (registeredChoice == 2 || 3)
                     {
                         cout << "\nEnter the item length: ";
                         cin >> itemLength;
