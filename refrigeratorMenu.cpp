@@ -82,8 +82,8 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 cout << "\nEnter the item type: ";
                 cin >> itemType;
 
-                addItemToFridge(userList, kitchenMasterTest, normalItem, sectionTest);
-                // Need to update section volume after adding 
+                addItemToFridge(userList, kitchenMasterTest, normalItem, sectionTest); 
+                // NEED TO UPDATE SECTION VOLUME
                 // userList.saveToFile();
                 displayMenu();
                 break;
@@ -92,7 +92,14 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
             // Show current items
             case 2:
             {
-                cout << "\nTO IMPLEMENT user's current items and their info\n";
+                for (const auto& sections: userSections)
+                {
+                    for (const auto& items: sections.getItems())
+                    {
+                        savedItems.displayItem(items.getItemName());
+                    }
+                }
+
                 displayMenu();
                 break;
             }
@@ -243,7 +250,7 @@ void addItemToFridge(UserProfiles& profiles, Fridge& fridge, Item& item, Section
     {
         for (const auto& allergy: user.getAllergies())
         {
-            if (item.getItemName().find(allergy) != std::string::npos)
+            if (item.getItemName().find(allergy) != string::npos)
             {
                 cout << "A user of this fridge is allergic to " << allergy
                 << ".\n";
@@ -254,5 +261,5 @@ void addItemToFridge(UserProfiles& profiles, Fridge& fridge, Item& item, Section
 
     cout << item.getItemName() << " was successfully added to the " 
     << section.getSectionName() << ".\n";
-    fridge.addItem(item, section.getSectionName());
+    section.addItem(item);
 }
