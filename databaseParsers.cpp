@@ -657,18 +657,19 @@ public:
 
     void displayItems() const
     {
-        cout << "------------------------------------------------------------------"<< endl;
-        cout << "| Item               | Volume               | Days to Expire" << endl;
-        cout << "------------------------------------------------------------------" << endl;
+        cout << "-----------------------------------------------------------------------------------"<< endl;
+        cout << "| Item                 | Volume               | Days to Expire         | Type" << endl;
+        cout << "-----------------------------------------------------------------------------------" << endl;
 
         for (const auto& item : listOfItems)
         {
             cout << "| " << setw(20) << left << item.getItemName()
-                << " | " << setw(28) << left << item.getItemVolume() 
-                << " | " << setw(25) << left << item.getExpiration() << endl;
+                << " | " << setw(20) << left << item.getItemVolume() 
+                << " | " << setw(22) << left << item.getExpiration()
+                << " | " << setw(20) << left << item.getItemType() << endl;
         }
 
-        cout << "-----------------------------------------------------------------------------" << endl;
+        cout << "---------------------------------------------------------------------------------" << endl;
     }
 
     void displayItem(const string& itemName) const
@@ -679,7 +680,8 @@ public:
             {
                 cout << "Item: " << item.getItemName()
                      << " | Volume: " << item.getItemVolume() 
-                     << " | Days to Expire: " << item.getExpiration() << endl;
+                     << " | Days to Expire: " << item.getExpiration()
+                     << " | Type: " << item.getItemType() << endl;
                 return;
             }
         }
