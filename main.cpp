@@ -26,6 +26,10 @@ int main()
     User loggedIn;
     loggedIn = loginChoices(userList.getUsers());
 
+    cout << "Logged in as: " << loggedIn.getName() << endl;
+
+    
+
     //loginChoices();
 
 
