@@ -15,12 +15,11 @@ void displayMenu()
     << "**************************************************************\n";
 	cout << "\nSelect one of the following:\n"
 		<< "    1: Add item\n"
-		<< "    2: Show current items\n"
+		<< "    2: Remove item\n"
 		<< "    3: Show expiration dates\n"
-		<< "    4: Remaining space\n"
+		<< "    4: Show current items\n"
 		<< "    5: View profile\n"
-        << "    6: Check database\n"
-		<< "    7: Log out\n";
+		<< "    6: Log out\n";
 }
 
 // Function definition selectChoices
@@ -40,7 +39,7 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
             userSections.push_back(sections);
         }
     }
-    while (choice != 7)
+    while (choice != 6)
     {
         cout << "\nSelect an option: "; 
         cin >> choice; 
@@ -52,10 +51,10 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
             case 1: 
             {
                 // Variables
-                bool noFoundSection = true;
+                bool noFoundSection, alreadyRegistered = false;
                 string givenSection, itemName, itemType;
                 double itemLength, itemWidth, itemHeight; 
-                int itemExpiration = 0, sectionCounter = 0;
+                int itemExpiration = 0, sectionCounter = 0, registeredChoice = 0;
 
                 while (noFoundSection)
                 {
@@ -78,52 +77,178 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                             break;
                         }
                     }
+
+                    if (noFoundSection)
+                    {
+                        cout << "\nThere is no section with that name. Try again.";
+                    }         
                 }
 
-                cout << "\nEnter the name of the food: ";
-                getline(cin, itemName);
-                cout << "\nEnter the item length: ";
-                cin >> itemLength;
-                cout << "\nEnter the item width: ";
-                cin >> itemWidth;
-                cout << "\nEnter the item height: ";
-                cin >> itemHeight;
-                cout << "\nEnter the item type: ";
-                cin >> itemType;
-                cout << "\nEnter how many days until the item expires: ";
-                cin >> itemExpiration;
-
-                Item givenItem(itemName, itemLength, itemWidth, itemHeight, itemExpiration, itemType);
-                addItemToFridge(userList, kitchenMasterTest, givenItem, sectionTest); 
-                displayMenu();
-                break;
-            }
-
-            // Show current items
-            case 2:
-            {
-                // Copied from itemsDatabase class
-                cout << "-----------------------------------------------------------------------------------"<< endl;
-                cout << "| Item                 | Volume               | Days to Expire         | Type" << endl;
-                cout << "-----------------------------------------------------------------------------------" << endl;
-                cout << "---------------------------------------------------------------------------------" << endl;
-                
-                for (const auto& sections: userSections)
+                // Account for space
+                if (sectionTest.getRemainingVolume() <= 0)
                 {
-                    for (const auto& items: sections.getItems())
+                    cout << "\nYou have no free space left. "
+                    << "Please remove an item before adding a new one.";
+                }
+
+                else 
+                {
+                    cout << "\nEnter the name of the food: ";
+                    getline(cin, itemName);
+                    
+                    // Check if item is already in database.
+                    for (const auto& item : savedItems.getListOfItems())
                     {
-                        cout << "| " << setw(20) << left << items.getItemName()
-                        << " | " << setw(20) << left << items.getItemVolume() 
-                        << " | " << setw(22) << left << items.getExpiration()
-                        << " | " << setw(20) << left << items.getItemType() << endl;
+                        if (itemName == item.getItemName())
+                        {
+                            cout << "\nThere is a similar item already" 
+                            << " registered in the database. Is the information the same?"
+                            << " Type 1 if yes, and 2 if no.";
+
+                            // Item information.
+                            cout << "\nName: " << item.getItemName();
+                            cout << "\nType: " << item.getItemType();
+                            cout << "\nPhysical Dimensions (inches): " 
+                            << item.getLength() << " x " << item.getWidth() << " x "
+                            << item.getHeight();
+                            cout << "\nDays until Expiration: " << item.getExpiration();
+                            
+                            do
+                            {
+                                cout << "\n\nChoice: ";
+                                cin >> registeredChoice;
+                            } while (registeredChoice != 1 && registeredChoice != 2);
+
+                            if (registeredChoice == 1)
+                            {
+                                Item registeredItem(item.getItemName(), item.getLength(), 
+                                item.getWidth(), item.getHeight(), item.getExpiration(), 
+                                item.getItemType());
+                                addItemToFridge(userList, kitchenMasterTest, registeredItem, sectionTest);
+                            }
+                        }
+                    }
+
+                    if (registeredChoice == 2)
+                    {
+                        cout << "\nEnter the item length: ";
+                        cin >> itemLength;
+                        cout << "\nEnter the item width: ";
+                        cin >> itemWidth;
+                        cout << "\nEnter the item height: ";
+                        cin >> itemHeight;
+                        cout << "\nEnter the item type: ";
+                        cin >> itemType;
+                        cout << "\nEnter how many days until the item expires: ";
+                        cin >> itemExpiration;
+
+                        Item givenItem(itemName, itemLength, itemWidth, itemHeight, itemExpiration, itemType);
+                        addItemToFridge(userList, kitchenMasterTest, givenItem, sectionTest); 
                     }
                 }
 
+                    displayMenu();
+                    break;
+                }
+
+                // Remove an item.
+                case 2:
+                {
+                // Variables
+                    bool noFoundSection, foundItem;
+                    string givenSection, itemName;
+                    int itemExpiration = 0, sectionCounter = 0, registeredChoice = 0;
+
+                    while (noFoundSection)
+                    {
+                        cout << "\nWhich section would you like to add to? \n";
+
+                        for (const Section sections : userSections)
+                        {
+                            cout << sections.getSectionName() << endl;
+                        }   
+
+                        cout << "\nEnter its name: ";
+                        getline(cin, givenSection);
+
+                        for (auto& sections : kitchenMasterTest.getSections())
+                        {
+                            if (givenSection == sections.getSectionName())
+                            {
+                                sectionTest = sections;
+                                noFoundSection = false;
+                                break;
+                            }
+                        }
+
+                        if (noFoundSection)
+                        {
+                            cout << "\nThere is no section with that name. Try again.";
+                        }         
+                    }
+
+                    while (!foundItem)
+                    {
+                        // Display items
+                        if (sectionTest.getItems().size() == 0)
+                        {
+                            cout << "\nThere are no items in this section.";
+                        }
+
+                        else 
+                        {
+                            cout << "\nAll items in this section: ";
+                            for (auto& item : sectionTest.getItems())
+                            {
+                                cout << "\nName: " << item.getItemName();
+                                cout << "\nType: " << item.getItemType();
+                                cout << "\nPhysical Dimensions (inches): " 
+                                << item.getLength() << " x " << item.getWidth() << " x "
+                                << item.getHeight();
+                                cout << "\nDays until Expiration: " << item.getExpiration();
+                            }
+                            
+                            cout << "\nEnter the name of the food: ";
+                            getline(cin, itemName);
+
+                            for (auto& item : sectionTest.getItems())
+                            {
+                                if (item.getItemName() == itemName)
+                                {
+                                    // Item information.
+                                    cout << "\nName: " << item.getItemName();
+                                    cout << "\nType: " << item.getItemType();
+                                    cout << "\nPhysical Dimensions (inches): " 
+                                    << item.getLength() << " x " << item.getWidth() << " x "
+                                    << item.getHeight();
+                                    cout << "\nDays until Expiration: " << item.getExpiration();
+
+                                    foundItem = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        cout << "\n\nAre you sure you want to remove this item?"
+                        << " Type 1 to confirm, and 2 to refuse.";
+                        do
+                        {
+                            cout << "\nChoice: ";
+                            cin >> registeredChoice;
+                        } while (registeredChoice != 1 && registeredChoice != 2);
+
+                        // Removing the item.
+                        if (registeredChoice == 1)
+                        {
+                            kitchenMasterTest.removeItem(itemName, sectionTest.getSectionName());
+                        }
+                    }
+
                 displayMenu();
                 break;
             }
 
-            // Show expiration dates
+            // Show expiration dates.
             case 3:
             {
                 // Variables
@@ -160,11 +285,25 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 break;
             }
 
-            // Remaining space, includes requesting/giving space options
+            // Show current items
             case 4:
             {
-                cout << "\nTO IMPLEMENT things like request/give space, see "
-                << "remaining space.\n";
+                // Copied from itemsDatabase class
+                cout << "-----------------------------------------------------------------------------------"<< endl;
+                cout << "| Item                 | Volume               | Days to Expire         | Type" << endl;
+                cout << "-----------------------------------------------------------------------------------" << endl;
+                cout << "---------------------------------------------------------------------------------" << endl;
+                
+                for (const auto& sections: userSections)
+                {
+                    for (const auto& items: sections.getItems())
+                    {
+                        cout << "| " << setw(20) << left << items.getItemName()
+                        << " | " << setw(20) << left << items.getItemVolume() 
+                        << " | " << setw(22) << left << items.getExpiration()
+                        << " | " << setw(20) << left << items.getItemType() << endl;
+                    }
+                }
 
                 displayMenu();
                 break;
@@ -185,8 +324,11 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 for (const auto& section : userSections)
                 {
                     cout << section.getSectionName() << ": "
+                    << "\nLength: " << section.getLength()
+                    << "\nWidth: " << section.getWidth()
+                    << "\nHeight: " << section.getHeight()
                     << round((section.getRemainingVolume()/section.getSectionVolume()) * 100)
-                    << "\% space remaining.\n";
+                    << "\n \% space remaining.\n";
                     usedSectionSpace += section.getSectionVolume();
                 }
 
@@ -197,13 +339,6 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 break;
             }
 
-            // Check database
-            case 6:
-            {
-                // fridgeDatabase();
-                displayMenu();
-                break;
-            }
             // Log out
             case 7:
             {
@@ -308,7 +443,7 @@ void addItemToFridge(UserProfiles& profiles, Fridge& fridge, Item& item, Section
     item.getHeight() > section.getHeight())
     {
         cout << item.getItemName() << " is too large for the " 
-        << section.getSectionName() << ".\n";
+        << section.getSectionName() << ". Returning to menu.\n";
         return;
     }
 
