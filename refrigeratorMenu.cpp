@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include "databaseParsers.cpp"
 using namespace std;
 
@@ -25,10 +26,12 @@ void displayMenu()
 void selectChoices(UserProfiles& userList, User& user, ItemsDatabase& savedItems, 
 FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
 {
+    // Variables
     int choice = 0, sectionCounter = 0;
     kitchenMasterTest = fridges.getFridges()[0];
-    Item normalItem("normal", 1, 1, 2, 500, "Unknown");
     vector<Section> userSections;
+    vector<pair<pair<string, string>, int>> showExpirations;
+    
     for (Section sections : kitchenMasterTest.getSections())
     {
         if (sections.getSectionOwner().getEmail() == user.getEmail())
@@ -46,9 +49,12 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
             // Add an item
             case 1: 
             {
+                // Variables
                 bool noFoundSection = true;
                 string givenSection, itemName, itemType;
                 double itemLength, itemWidth, itemHeight; 
+                int itemExpiration = 0;
+
                 while (noFoundSection)
                 {
                     cout << "\nWhich section would you like to add to? Type its name: ";
@@ -72,7 +78,8 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 }
 
                 cout << "\nEnter the name of the food: ";
-                cin >> itemName;
+                getline(cin, itemName);
+                cin.ignore();
                 cout << "\nEnter the item length: ";
                 cin >> itemLength;
                 cout << "\nEnter the item width: ";
@@ -81,9 +88,10 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 cin >> itemHeight;
                 cout << "\nEnter the item type: ";
                 cin >> itemType;
-
-                addItemToFridge(userList, kitchenMasterTest, normalItem, sectionTest); 
-                // NEED TO UPDATE SECTION VOLUME
+                cout << "\nEnter how many days until the item expires: ";
+                cin >> itemExpiration;
+                Item givenItem(itemName, itemLength, itemWidth, itemHeight, itemExpiration, itemType);
+                addItemToFridge(userList, kitchenMasterTest, givenItem, sectionTest); 
                 // userList.saveToFile();
                 displayMenu();
                 break;
@@ -107,7 +115,35 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
             // Show expiration dates
             case 3:
             {
-                cout << "\nTO IMPLEMENT all user's expiration date for food\n";
+                // Variables
+                string sectOwnerName, sectItemName;
+                int sectItemExpiration = 0;
+
+                // Bring all necessary information to vector
+                for (auto& sections: kitchenMasterTest.getSections())
+                {
+                    sectOwnerName = sections.getSectionOwner().getName();
+                    for (auto& items : sections.getItems())
+                    {
+                        sectItemExpiration = items.getExpiration();
+                        showExpirations.push_back(make_pair(make_pair(
+                            sectOwnerName, sectItemName), sectItemExpiration));
+                    }
+                }
+
+                // Sort by expiration
+                sort(showExpirations.begin(), showExpirations.end(), 
+                [](const auto& a, const auto& b) { return a.second < b.second; });
+
+                // Print
+                for (const auto& entry : showExpirations) 
+                {
+                    cout << "Item Owner: " << entry.first.first
+                    << ", Item Name: " << entry.first.second
+                    << ", Expiration: " << entry.second << endl;
+                }
+
+                showExpirations.clear();
                 displayMenu();
                 break;
             }
@@ -125,8 +161,26 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
             // Edit profile
             case 5:
             {
-                cout << "\nTO IMPLEMENT profile function\n";
-                
+                double usedSectionSpace = 0;
+                cout << "\nName: " << user.getName();
+                cout << "\nEmail: " << user.getEmail();
+                cout << "\nAllergies: ";
+                for (const auto& allergy : user.getAllergies())
+                {
+                    cout << allergy;
+                }
+                cout << "Space(s): \n";
+                for (const auto& section : userSections)
+                {
+                    cout << section.getSectionName() << ": "
+                    << (section.getRemainingVolume()/section.getSectionVolume()) * 100
+                    << "\% space remaining.\n";
+                    usedSectionSpace += section.getSectionVolume();
+                }
+
+                cout << "Used " << (usedSectionSpace / kitchenMasterTest.getTotalCapacity()) * 100
+                << "\% of the total fridge space available.\n";
+
                 displayMenu();
                 break;
             }
