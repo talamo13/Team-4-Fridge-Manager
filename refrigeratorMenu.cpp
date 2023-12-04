@@ -83,7 +83,7 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 cin >> itemType;
 
                 addItemToFridge(userList, kitchenMasterTest, normalItem, sectionTest);
-                // Need to update section volume after adding. 
+                // Need to update section volume after adding 
                 // userList.saveToFile();
                 displayMenu();
                 break;
