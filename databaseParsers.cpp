@@ -18,6 +18,13 @@ public:
         
     }
 
+    User(const User& other)
+        : email(other.email), password(other.password), name(other.name),
+          associatedAllergies(other.associatedAllergies) 
+    {
+        
+    }
+
     User(const string& email, const string& password, const string& name, 
          vector<string> associatedAllergies) : email(email),
          password(password), name(name), associatedAllergies(associatedAllergies)
@@ -485,7 +492,7 @@ public:
         cout << email << " has been added!" << endl;
     }
 
-    vector<User> getUsers() const
+    vector<User>& getUsers()
     {
         return listOfUsers;
     }
@@ -827,7 +834,7 @@ public:
         file.close();
     }
 
-    vector<Fridge> getFridges() const
+    vector<Fridge>& getFridges()
     {
         return listOfFridges;
     }

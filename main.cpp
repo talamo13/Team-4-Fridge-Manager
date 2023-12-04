@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+#include <limits>
 
 //#include "databaseParsers.cpp"
 #include "refrigeratorMenu.cpp"
@@ -7,17 +9,13 @@
 using namespace std;
 
 // Function declaration(s)
-void addItemToFridge(UserProfiles&, Fridge&, Item&, Section&);
+bool checkEmail(vector<User>& listOfUsers, const string& emailToCheck);
 
-bool checkEmail(vector<User>& listOfUsers, string emailToCheck);
+bool checkPass(vector<User>& listOfUsers, const string& email, const string& passCheck);
 
-bool checkPass(vector<User>& listOfUsers, string email, string passCheck);
+User& successfulLogin(vector<User>& listOfUsers, const string& emailChecked, const string& passChecked);
 
-User& successfulLogin(vector<User>& listOfUsers, string emailChecked, string passChecked);
-
-User& logIn(vector<User>& listOfUsers);
-
-User& loginChoices();
+User& loginChoices(vector<User>& userVec);
 
 int main()
 {
@@ -25,7 +23,9 @@ int main()
     UserProfiles userList; // loads database for ALL users
 
     // check login here first
-    User loggedIn = loginChoices();
+    User loggedIn;
+    loggedIn = loginChoices(userList.getUsers());
+
     //loginChoices();
 
 
@@ -80,7 +80,7 @@ Basic User Login
 
 *******************************************************************************/
 
-bool checkEmail(vector<User>& listOfUsers, string emailToCheck)
+bool checkEmail(vector<User>& listOfUsers, const string& emailToCheck)
 {
     for (auto& user : listOfUsers)
     {
@@ -92,80 +92,50 @@ bool checkEmail(vector<User>& listOfUsers, string emailToCheck)
     return true;
 }
 
-bool checkPass(vector<User>& listOfUsers, string email, string passCheck)
+bool checkPass(vector<User>& listOfUsers, const string& email, const string& passCheck)
 {
-  for (const auto& user : listOfUsers)
-      {
-            if ((email == user.getEmail()) && (passCheck == user.getPassword()))
-            {
-              return false;
-            }
-      }
-      return true;
-}
-
-User& successfulLogin(vector<User>& listOfUsers, string emailChecked, string passChecked)//Should only run after credential verification
-{
-  for (auto& user : listOfUsers)
-  {
-    if((emailChecked == user.getEmail()) && (passChecked == user.getPassword()))
+    for (const auto& user : listOfUsers)
     {
-      return user;
-    }
-  }
-}
-
-User& logIn(vector<User>& listOfUsers)
-{
-    string email, password;
-    
-    do{
-        cout << "Enter email: "; 
-        cin >> email;
-        if(checkEmail(listOfUsers, email))
+        if ((email == user.getEmail()) && (passCheck == user.getPassword()))
         {
-          cout << "Incorrect email, please try again." << endl;
+            return false;
         }
-    }while(checkEmail(listOfUsers, email));
-
-    do{ 
-      cout << "Enter password: ";
-      cin >> password;
-      if(checkPass(listOfUsers, email, password))
-      {
-        cout << "Incorrect password, please try again." << endl;
-      }
-      else
-      {
-        cout << "Login Successful." << endl;
-        return successfulLogin(listOfUsers, email, password);
-      }
-    }while(checkPass(listOfUsers, email, password));
+    }
+    return true;
 }
 
-User& loginChoices()
+User& successfulLogin(vector<User>& listOfUsers, const string& emailChecked, const string& passChecked)//Should only run after credential verification
 {
+    for (auto& user : listOfUsers)
+    {
+        if((emailChecked == user.getEmail()) && (passChecked == user.getPassword()))
+        {
+            return user;
+        }
+    }
+}
 
+User& loginChoices(vector<User>& userVec)
+{
     int choices;
     
     cout << "Select an option: \n"
          << "-------------------\n"
          << "1: Register for Fridge Manager\n"
          << "2: Login\n"
-         << "Selection: "  << endl;
+         << "Selection: ";
 
     cin >> choices;
 
-    UserProfiles userList;
-    vector<User> userVec = userList.getUsers();
-
     if (choices == 1) 
     {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
         string name, email, password;
         
         cout << "Enter your full name: ";
-        cin >> name;
+        getline(cin, name);
+
         cout << "Enter email: ";
         cin >> email;
 
@@ -175,25 +145,29 @@ User& loginChoices()
             cin >> password;
 
             vector<string> allergies;
+            cout << "\nDo you have any allergies? If you don't type None and click Enter.\n"
+                 << "If you do, type them line-by-line.\n"
+                 << "When you are done, type Done and click Enter." << endl;
+                
             string allergy;
-            cout << "Do you have any allergies? If so, type them line-by-line.\n"
-                << "When you are done or you have no allergies, type None and click Enter";
-
             cin >> allergy;
             allergies.push_back(allergy);
-
+            
             if (allergies[0] != "None")
             {
-                while(allergy != "None")
+                while (allergy != "Done")
                 {
                     cin >> allergy;
-                    allergies.push_back(allergy);
+                    if (allergy != "Done")
+                    {
+                        allergies.push_back(allergy);
+                    }
                 }
             }
 
             ofstream file;
-            file.open("mastersUsers.csv");
-            file << email << "," << password << "," << name;
+            file.open("masterUsers.csv", ios::app);
+            file << email << "," << password << "," << name << ",";
             
             if ((allergies[0] == "None") || (allergies.size() == 1)) 
             {
@@ -210,53 +184,60 @@ User& loginChoices()
                 file << "\n";
             }
             
-            cout << "\nAccount has been registered" << endl;
+            cout << "\nAccount has been registered.\n" << endl;
+            
+            userVec.push_back(User(email, password, name, allergies));
 
             file.close();
         }
         else
         {
-            cout << "Email already in use. Please try again." << endl;
+            cout << "Email already in use. Please try again.\n" << endl;
         }
         
-        loginChoices();
+        loginChoices(userVec);
     }
     else if (choices == 2)
     {
-        vector<User> loggingIn = userList.getUsers();
-        User loggedInUser = logIn(loggingIn);
-        return loggedInUser;
-    }
-}
-
-/***
- ***/
-
-// Function for adding item to fridge
-void addItemToFridge(UserProfiles& profiles, Fridge& fridge, Item& item, Section& section)
-{
-    if (item.getLength() > section.getLength() || item.getWidth() > section.getWidth() ||
-    item.getHeight() > section.getHeight())
-    {
-        cout << item.getItemName() << " is too large for the " 
-        << section.getSectionName() << ".\n";
-        return;
-    }
-
-    for (const auto& user : profiles.getUsers())
-    {
-        for (const auto& allergy: user.getAllergies())
+        string email, password;
+    
+        do
         {
-            if (item.getItemName().find(allergy) != std::string::npos)
+            cout << "Enter email: "; 
+            cin >> email;
+
+            if(checkEmail(userVec, email))
             {
-                cout << "A user of this fridge is allergic to " << allergy
-                << ".\n";
-                return;
+                cout << "Incorrect email, please try again." << endl;
             }
         }
+        while(checkEmail(userVec, email));
+
+        do
+        { 
+            cout << "Enter password: ";
+            cin >> password;
+
+            if(checkPass(userVec, email, password))
+            {
+                cout << "Incorrect password, please try again." << endl;
+            }
+            else
+            {
+                cout << "Login Successful." << endl;
+
+                for (auto& user : userVec)
+                {
+                    if((email == user.getEmail()) && (password == user.getPassword()))
+                    {
+                        return user;
+                    }
+                }
+            }
+        }
+        while(checkPass(userVec, email, password));
     }
 
-    cout << item.getItemName() << " was successfully added to the " 
-    << section.getSectionName() << ".\n";
-    fridge.addItem(item, section.getSectionName());
+    static User defaultUser;
+    return defaultUser;
 }
