@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <cmath> // for rounding
 #include "databaseParsers.cpp"
 using namespace std;
 
@@ -17,7 +18,7 @@ void displayMenu()
 		<< "    2: Show current items\n"
 		<< "    3: Show expiration dates\n"
 		<< "    4: Remaining space\n"
-		<< "    5: Edit profile\n"
+		<< "    5: View profile\n"
         << "    6: Check database\n"
 		<< "    7: Log out\n";
 }
@@ -27,7 +28,7 @@ void selectChoices(UserProfiles& userList, User& user, ItemsDatabase& savedItems
 FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
 {
     // Variables
-    int choice = 0, sectionCounter = 0;
+    int choice = 0;
     kitchenMasterTest = fridges.getFridges()[0];
     vector<Section> userSections;
     vector<pair<pair<string, string>, int>> showExpirations;
@@ -43,7 +44,8 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
     {
         cout << "\nSelect an option: "; 
         cin >> choice; 
-
+        cin.ignore();
+        
         switch (choice)
         {
             // Add an item
@@ -53,33 +55,33 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 bool noFoundSection = true;
                 string givenSection, itemName, itemType;
                 double itemLength, itemWidth, itemHeight; 
-                int itemExpiration = 0;
+                int itemExpiration = 0, sectionCounter = 0;
 
                 while (noFoundSection)
                 {
-                    cout << "\nWhich section would you like to add to? Type its name: ";
+                    cout << "\nWhich section would you like to add to? \n";
 
                     for (const Section sections : userSections)
                     {
                         cout << sections.getSectionName() << endl;
-                    }
+                    }   
 
-                    cin >> givenSection;
-                    for (const Section sections : userSections)
+                    cout << "\nEnter its name: ";
+                    getline(cin, givenSection);
+
+                    for (auto& sections : kitchenMasterTest.getSections())
                     {
                         if (givenSection == sections.getSectionName())
                         {
-                            sectionTest = kitchenMasterTest.getSections()[sectionCounter];
+                            sectionTest = sections;
                             noFoundSection = false;
                             break;
                         }
-                        sectionCounter++;
                     }
                 }
 
                 cout << "\nEnter the name of the food: ";
                 getline(cin, itemName);
-                cin.ignore();
                 cout << "\nEnter the item length: ";
                 cin >> itemLength;
                 cout << "\nEnter the item width: ";
@@ -90,9 +92,9 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 cin >> itemType;
                 cout << "\nEnter how many days until the item expires: ";
                 cin >> itemExpiration;
+
                 Item givenItem(itemName, itemLength, itemWidth, itemHeight, itemExpiration, itemType);
                 addItemToFridge(userList, kitchenMasterTest, givenItem, sectionTest); 
-                // userList.saveToFile();
                 displayMenu();
                 break;
             }
@@ -100,11 +102,20 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
             // Show current items
             case 2:
             {
+                // Copied from itemsDatabase class
+                cout << "-----------------------------------------------------------------------------------"<< endl;
+                cout << "| Item                 | Volume               | Days to Expire         | Type" << endl;
+                cout << "-----------------------------------------------------------------------------------" << endl;
+                cout << "---------------------------------------------------------------------------------" << endl;
+                
                 for (const auto& sections: userSections)
                 {
                     for (const auto& items: sections.getItems())
                     {
-                        savedItems.displayItem(items.getItemName());
+                        cout << "| " << setw(20) << left << items.getItemName()
+                        << " | " << setw(20) << left << items.getItemVolume() 
+                        << " | " << setw(22) << left << items.getExpiration()
+                        << " | " << setw(20) << left << items.getItemType() << endl;
                     }
                 }
 
@@ -125,6 +136,7 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                     sectOwnerName = sections.getSectionOwner().getName();
                     for (auto& items : sections.getItems())
                     {
+                        sectItemName = items.getItemName();
                         sectItemExpiration = items.getExpiration();
                         showExpirations.push_back(make_pair(make_pair(
                             sectOwnerName, sectItemName), sectItemExpiration));
@@ -136,11 +148,11 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 [](const auto& a, const auto& b) { return a.second < b.second; });
 
                 // Print
-                for (const auto& entry : showExpirations) 
+                for (const auto& pairPart : showExpirations) 
                 {
-                    cout << "Item Owner: " << entry.first.first
-                    << ", Item Name: " << entry.first.second
-                    << ", Expiration: " << entry.second << endl;
+                    cout << "Item Owner: " << pairPart.first.first
+                    << ", Item Name: " << pairPart.first.second
+                    << ", Days until Expiration: " << pairPart.second << endl;
                 }
 
                 showExpirations.clear();
@@ -158,7 +170,7 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 break;
             }
 
-            // Edit profile
+            // View profile
             case 5:
             {
                 double usedSectionSpace = 0;
@@ -169,16 +181,16 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 {
                     cout << allergy;
                 }
-                cout << "Space(s): \n";
+                cout << "\nSpace(s): \n";
                 for (const auto& section : userSections)
                 {
                     cout << section.getSectionName() << ": "
-                    << (section.getRemainingVolume()/section.getSectionVolume()) * 100
+                    << round((section.getRemainingVolume()/section.getSectionVolume()) * 100)
                     << "\% space remaining.\n";
                     usedSectionSpace += section.getSectionVolume();
                 }
 
-                cout << "Used " << (usedSectionSpace / kitchenMasterTest.getTotalCapacity()) * 100
+                cout << "Used " << round((usedSectionSpace / kitchenMasterTest.getTotalCapacity()) * 100)
                 << "\% of the total fridge space available.\n";
 
                 displayMenu();
