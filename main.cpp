@@ -160,16 +160,19 @@ User& loginChoices(vector<User>& userVec)
             
             cout << "\nAccount has been registered.\n" << endl;
             
-            userVec.push_back(User(email, password, name, allergies));
+            User newlyReg = User(email, password, name, allergies);
+            userVec.push_back(newlyReg);
+
+            return newlyReg;
 
             file.close();
         }
         else
         {
             cout << "Email already in use. Please try again.\n" << endl;
+            loginChoices(userVec);
         }
         
-        loginChoices(userVec);
     }
     else if (choices == 2)
     {
