@@ -918,13 +918,8 @@ void addItemToFridge(UserProfiles& profiles, Fridge& fridge, Item& item, Section
         }
     }
 
-    for (auto& findSection : fridge.getSections())
-    {
-         if (findSection.getSectionName() == section.getSectionName())
-        {
-            findSection.addItem(item);
-            cout << item.getItemName() << " was successfully added to the " 
-                    << section.getSectionName() << ".\n";
-        }
-    }
+    // Item being successfully added. 
+    section.addItem(item);
+    cout << item.getItemName() << " was successfully added to the "
+    << section.getSectionName() << ".\n";
 }
