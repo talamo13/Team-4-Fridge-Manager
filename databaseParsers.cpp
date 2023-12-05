@@ -653,20 +653,9 @@ public:
         return listOfItems;
     }
 
-    void addItem(const string& itemName, double length, double width, 
-    double height, int expiration, const string& itemType)
+    void addItem(Item& newItem)
     {
-        for (const auto& item : listOfItems)
-        {
-            if (itemName == item.getItemName())
-            {
-                cout << itemName << " is already in the database" << endl;
-                return;
-            }
-        }
-
-        listOfItems.push_back(Item(itemName, length, width, height, expiration, itemType));
-        cout << itemName << " has been added!" << endl;
+        listOfItems.push_back(newItem);
     }
 
     void displayItems() const
@@ -713,8 +702,6 @@ public:
                  << "," << item.getItemType() << "\n";
         }
         file.close();
-        
-        // cout << "Saved to " << filename << endl;
     }
 
 private:
@@ -886,6 +873,12 @@ public:
                     vector<Item> savedItems = databaseOfItems.getListOfItems();
 
                     vector<Item> itemInSection = section.getItems();
+
+                    for (auto& s : itemInSection)
+                    {
+                        cout << s.getItemName() << " ";
+                    }
+                    cout << endl;
 
                     if (find(savedItems.begin(), savedItems.end(), itemInSection[0]) != savedItems.end())
                     {

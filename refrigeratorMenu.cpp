@@ -145,13 +145,112 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section> userSection
 
                         if (addToDatabase == 1)
                         {
-                            savedItems.addItem(itemName, itemLength, itemWidth, itemHeight, 
-                            itemExpiration, itemType);
+                            savedItems.addItem(givenItem);
                             cout << "\n" << itemName << " has been added to the database.";
+
+                            ofstream fridgeFile("Fridges/KitchenMaster.csv");
+
+                            for (auto& section : kitchenMasterTest.getSections())
+                            {
+                                fridgeFile << section.getSectionName() << ",";
+
+                                if (section.getSectionOwner().getEmail() == "")
+                                {
+                                    fridgeFile << "None," << section.getLength() << "," << section.getWidth() << ","
+                                                << section.getHeight();
+                                }
+                                else
+                                {
+                                    fridgeFile << section.getSectionOwner().getEmail() << "," 
+                                                << section.getLength() << "," << section.getWidth() << ","
+                                                << section.getHeight();
+                                }
+                                
+                                if (section.getItems().size() == 0)
+                                {
+                                    fridgeFile << ",None";
+                                }
+                                else
+                                {
+                                    vector<Item> itemInSection = section.getItems();
+
+
+                                    fridgeFile << "," << itemInSection[0].getItemName() 
+                                                    << "~" << itemInSection[0].getLength()
+                                                    << "~" << itemInSection[0].getWidth()
+                                                    << "~" << itemInSection[0].getHeight()
+                                                    << "~" << itemInSection[0].getExpiration()
+                                                    << "~" << itemInSection[0].getItemType();
+
+                                    for (size_t i = 1; i < itemInSection.size(); i++)
+                                    {
+                                        fridgeFile << "-" << itemInSection[i].getItemName() 
+                                                    << "~" << itemInSection[i].getLength()
+                                                    << "~" << itemInSection[i].getWidth()
+                                                    << "~" << itemInSection[i].getHeight()
+                                                    << "~" << itemInSection[i].getExpiration()
+                                                    << "~" << itemInSection[i].getItemType();
+                                        
+                                    }
+                                }
+                                fridgeFile << "\n";
+                            } 
+                            
+                            fridgeFile.close();
                         }
                         else
                         {
                             cout << "\n" << itemName << " will not be added to the database.";
+
+                            ofstream fridgeFile("Fridges/KitchenMaster.csv");
+
+                            for (auto& section : kitchenMasterTest.getSections())
+                            {
+                                fridgeFile << section.getSectionName() << ",";
+
+                                if (section.getSectionOwner().getEmail() == "")
+                                {
+                                    fridgeFile << "None," << section.getLength() << "," << section.getWidth() << ","
+                                                << section.getHeight();
+                                }
+                                else
+                                {
+                                    fridgeFile << section.getSectionOwner().getEmail() << "," 
+                                                << section.getLength() << "," << section.getWidth() << ","
+                                                << section.getHeight();
+                                }
+                                
+                                if (section.getItems().size() == 0)
+                                {
+                                    fridgeFile << ",None";
+                                }
+                                else
+                                {
+                                    vector<Item> itemInSection = section.getItems();
+
+
+                                    fridgeFile << "," << itemInSection[0].getItemName() 
+                                                    << "~" << itemInSection[0].getLength()
+                                                    << "~" << itemInSection[0].getWidth()
+                                                    << "~" << itemInSection[0].getHeight()
+                                                    << "~" << itemInSection[0].getExpiration()
+                                                    << "~" << itemInSection[0].getItemType();
+
+                                    for (size_t i = 1; i < itemInSection.size(); i++)
+                                    {
+                                        fridgeFile << "-" << itemInSection[i].getItemName() 
+                                                    << "~" << itemInSection[i].getLength()
+                                                    << "~" << itemInSection[i].getWidth()
+                                                    << "~" << itemInSection[i].getHeight()
+                                                    << "~" << itemInSection[i].getExpiration()
+                                                    << "~" << itemInSection[i].getItemType();
+                                        
+                                    }
+                                }
+                                fridgeFile << "\n";
+                            } 
+                            
+                            fridgeFile.close();
                         }
                     }
                 }
@@ -262,6 +361,56 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section> userSection
                                 findSection.removeItem(toRemove);
                             }
                         }
+
+                        ofstream fridgeFile("Fridges/KitchenMaster.csv");
+
+                        for (auto& section : kitchenMasterTest.getSections())
+                        {
+                            fridgeFile << section.getSectionName() << ",";
+
+                            if (section.getSectionOwner().getEmail() == "")
+                            {
+                                fridgeFile << "None," << section.getLength() << "," << section.getWidth() << ","
+                                            << section.getHeight();
+                            }
+                            else
+                            {
+                                fridgeFile << section.getSectionOwner().getEmail() << "," 
+                                            << section.getLength() << "," << section.getWidth() << ","
+                                            << section.getHeight();
+                            }
+                            
+                            if (section.getItems().size() == 0)
+                            {
+                                fridgeFile << ",None";
+                            }
+                            else
+                            {
+                                vector<Item> itemInSection = section.getItems();
+
+
+                                fridgeFile << "," << itemInSection[0].getItemName() 
+                                                << "~" << itemInSection[0].getLength()
+                                                << "~" << itemInSection[0].getWidth()
+                                                << "~" << itemInSection[0].getHeight()
+                                                << "~" << itemInSection[0].getExpiration()
+                                                << "~" << itemInSection[0].getItemType();
+
+                                for (size_t i = 1; i < itemInSection.size(); i++)
+                                {
+                                    fridgeFile << "-" << itemInSection[i].getItemName() 
+                                                << "~" << itemInSection[i].getLength()
+                                                << "~" << itemInSection[i].getWidth()
+                                                << "~" << itemInSection[i].getHeight()
+                                                << "~" << itemInSection[i].getExpiration()
+                                                << "~" << itemInSection[i].getItemType();
+                                    
+                                }
+                            }
+                            fridgeFile << "\n";
+                        } 
+                        
+                        fridgeFile.close();
                     }
                     else
                     {
@@ -318,24 +467,47 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section> userSection
                 cout << "| Item                 | Volume               | Days to Expire         | Type" << endl;
                 cout << "-----------------------------------------------------------------------------------" << endl;
                 
-                for (auto& sections: userSections)
+                for (auto& section : userSections)
                 {
-                    for (const auto& items: sections.getItems())
+                    for (auto& fridgeSection : kitchenMasterTest.getSections())
                     {
-                        if (sections.getItems().size() == 0)
+                        if (section.getSectionName() == fridgeSection.getSectionName())
                         {
-                            cout << "\nNo items in " << sections.getSectionName();
-                        }
-
-                        else
-                        {
-                            cout << "| " << setw(20) << left << items.getItemName()
-                            << " | " << setw(20) << left << items.getItemVolume() 
-                            << " | " << setw(22) << left << items.getExpiration()
-                            << " | " << setw(20) << left << items.getItemType() << endl;
+                            for (const auto& item : fridgeSection.getItems())
+                            {
+                                if (fridgeSection.getItems().size() == 0)
+                                {
+                                    cout << "\nNo items in " << fridgeSection.getSectionName();
+                                }
+                                else
+                                {
+                                    cout << "| " << setw(20) << left << item.getItemName()
+                                    << " | " << setw(20) << left << item.getItemVolume() 
+                                    << " | " << setw(22) << left << item.getExpiration()
+                                    << " | " << setw(20) << left << item.getItemType() << endl;
+                                }
+                            }
                         }
                     }
                 }
+
+                // for (auto& sections: userSections)
+                // {
+                //     for (const auto& items: sections.getItems())
+                //     {
+                //         if (sections.getItems().size() == 0)
+                //         {
+                //             cout << "\nNo items in " << sections.getSectionName();
+                //         }
+                //         else
+                //         {
+                //             cout << "| " << setw(20) << left << items.getItemName()
+                //             << " | " << setw(20) << left << items.getItemVolume() 
+                //             << " | " << setw(22) << left << items.getExpiration()
+                //             << " | " << setw(20) << left << items.getItemType() << endl;
+                //         }
+                //     }
+                // }
 
                 displayMenu();
                 break;
@@ -492,16 +664,29 @@ void addItemToFridge(UserProfiles& profiles, Fridge& fridge, Item& item, Section
         }
     }
 
-    cout << item.getItemName() << " was successfully added to the " 
-    << section.getSectionName() << ".\n";
-
     for (auto& findSection : fridge.getSections())
     {
-        if (findSection.getSectionName() == section.getSectionName())
+         if (findSection.getSectionName() == section.getSectionName())
         {
             findSection.addItem(item);
+            cout << item.getItemName() << " was successfully added to the " 
+                    << section.getSectionName() << ".\n";
         }
     }
+
+    // section.addItem(item);
+    // cout << item.getItemName() << " was successfully added to the " 
+    //              << section.getSectionName() << ".\n";
+
+    // for (auto& findSection : fridge.getSections())
+    // {
+    //     if (findSection.getSectionName() == section.getSectionName())
+    //     {
+    //         findSection.addItem(item);
+    //         cout << item.getItemName() << " was successfully added to the " 
+    //              << section.getSectionName() << ".\n";
+    //     }
+    // }
 
     // for (auto& section: fridge.getSections())
     // {
@@ -513,7 +698,7 @@ void addItemToFridge(UserProfiles& profiles, Fridge& fridge, Item& item, Section
     //     cout << endl;
     // }
 
-    // // update KitchenMaster.csv
+    // update KitchenMaster.csv
     // ofstream fridgeFile("Fridges/KitchenMaster.csv");
 
     // for (auto& section : fridge.getSections())

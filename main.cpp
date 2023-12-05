@@ -53,7 +53,7 @@ int main()
 
     userList.saveToFile(); // always save to file to update databases
     savedItems.saveToFile();
-    fridges.saveToFile();
+    // fridges.saveToFile();
 
     return 0;
 }
