@@ -741,24 +741,18 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section>& userSectio
                 
                 for (auto& section : userSections)
                 {
-                    for (auto& fridgeSection : kitchenMasterTest.getSections())
+                    for (const auto& item : section.getItems())
                     {
-                        if (section.getSectionName() == fridgeSection.getSectionName())
+                        if (section.getItems().size() == 0)
                         {
-                            for (const auto& item : fridgeSection.getItems())
-                            {
-                                if (fridgeSection.getItems().size() == 0)
-                                {
-                                    cout << "\nNo items in " << fridgeSection.getSectionName();
-                                }
-                                else
-                                {
-                                    cout << "| " << setw(20) << left << item.getItemName()
-                                    << " | " << setw(20) << left << item.getItemVolume() 
-                                    << " | " << setw(22) << left << item.getExpiration()
-                                    << " | " << setw(20) << left << item.getItemType() << endl;
-                                }
-                            }
+                            cout << "\nNo items in " << section.getSectionName();
+                        }
+                        else
+                        {
+                            cout << "| " << setw(20) << left << item.getItemName()
+                            << " | " << setw(20) << left << item.getItemVolume() 
+                            << " | " << setw(22) << left << item.getExpiration()
+                            << " | " << setw(20) << left << item.getItemType() << endl;
                         }
                     }
                 }
@@ -782,7 +776,7 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section>& userSectio
                     cout << section.getSectionName() << ": "
                     << "\n\t\tLength: " << section.getLength() << " inches"
                     << "\n\t\tWidth: " << section.getWidth() << " inches"
-                    << "\n\t\tHeight: " << section.getHeight() << " inches\n"
+                    << "\n\t\tHeight: " << section.getHeight() << " inches\n\t\t"
                     << round((section.getRemainingVolume()/section.getSectionVolume()) * 100)
                     << "\% space remaining.\n";
                     usedSectionSpace += section.getSectionVolume();
