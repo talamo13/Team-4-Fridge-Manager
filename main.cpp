@@ -18,22 +18,32 @@ User& loginChoices(vector<User>& userVec);
 int main()
 {
     UserProfiles userList; // loads database for ALL users
-
+    
     // check login here first
     User loggedIn;
     loggedIn = loginChoices(userList.getUsers());
 
     cout << "Logged in as: " << loggedIn.getName() << endl;
 
-    
-
     // after login validation, load all databases
     ItemsDatabase savedItems; // loads database for saved items
-    FridgesDatabase fridges; // loads database for saved fridges
+    FridgesDatabase fridges(savedItems); // loads database for saved fridges
     Fridge kitchenMasterTest = fridges.getFridges()[0]; // 71360 volume total
-    Section sectionTest;
+
+    // load user's sections
+    vector<Section> userSections;
+    for (auto& section : kitchenMasterTest.getSections())
+    {
+        if (section.getSectionOwner().getEmail() == loggedIn.getEmail())
+        {
+            userSections.push_back(section);
+        }
+    }
+
     displayMenu();
-    selectChoices(userList, loggedIn, savedItems, fridges, kitchenMasterTest, sectionTest);
+
+    selectChoices(userList, loggedIn, savedItems, fridges, kitchenMasterTest, userSections);
+
 
     // specified fridge associated users implementation database
 
@@ -41,8 +51,9 @@ int main()
 
     // user class and their info database
 
-    // fridges.saveToFile();
     userList.saveToFile(); // always save to file to update databases
+    savedItems.saveToFile();
+    fridges.saveToFile();
 
     return 0;
 }

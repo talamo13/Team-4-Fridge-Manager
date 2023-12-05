@@ -1,10 +1,10 @@
 Water Bottle,2.62,2.62,7.8,0,Drink
 Milk,4,4,9.5,14,Dairy
 Milk Gallon,6,6,10.75,14,Dairy
-Soda Can, 2.68,2.68,4.73,273,Drink
+Soda Can,2.68,2.68,4.73,273,Drink
 Eggs,1.71,1.71,2.2,30,Protein
 Cheese,3,4,2.5,60,Dairy
-Yogurt,3.64,3.64,2.20,14,Dairy
+Yogurt,3.64,3.64,2.2,14,Dairy
 Butter,4.22,2.5,1.39,90,Dairy
 Fresh Vegetables,12,8,10,7,Vegetable
 Tomato,2.97,2.2,2.2,10,Fruit
@@ -31,3 +31,4 @@ Salad Dressing,6,6,12,60,Condiment
 Hummus,7,7,7,14,Condiment
 Cottage Cheese,8,8,8,14,Dairy
 Meat,5,5,5,25,Meat
+Chicken,1,2,3,5,Poultry

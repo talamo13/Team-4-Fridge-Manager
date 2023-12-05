@@ -195,6 +195,13 @@ public:
         }
     }
 
+    Section(const Section& other) : name(other.name), owner(other.owner),
+          length(other.length), width(other.width), height(other.height),
+          volume(other.volume), usedVolume(other.usedVolume), items(other.items) 
+    {
+        
+    }
+
     void setSectionName(const string& sectionName)
     {
         name = sectionName;
@@ -264,7 +271,7 @@ public:
         return volume - usedVolume;
     }
 
-    vector<Item> getItems() const
+    vector<Item>& getItems()
     {
         return items;
     }
@@ -324,11 +331,11 @@ public:
            name(name), length(length), width(width), height(height),
            totalCapacity(length * width * height), sections(sections)
     {
-        for (const auto& section : sections)
+        for (auto& section : sections)
         {
             users.push_back(section.getSectionOwner());
             
-            for (const auto& item : section.getItems())
+            for (auto& item : section.getItems())
             {
                 usedCapacity += item.getItemVolume();
             }
@@ -414,12 +421,12 @@ public:
         return allItems;
     }
 
-    vector<User> getUsers() const
+    vector<User>& getUsers()
     {
         return users;
     }
 
-    vector<Section> getSections() const
+    vector<Section>& getSections()
     {
         return sections;
     }
@@ -641,7 +648,7 @@ public:
         file.close();
     }
 
-    vector<Item> getListOfItems() const
+    vector<Item>& getListOfItems()
     {
         return listOfItems;
     }
@@ -702,7 +709,8 @@ public:
         for (const auto& item : listOfItems)
         {
             file << item.getItemName() << "," << item.getLength() << "," << item.getWidth() 
-                 << "," << item.getHeight() << "," << item.getExpiration() << "\n";
+                 << "," << item.getHeight() << "," << item.getExpiration()
+                 << "," << item.getItemType() << "\n";
         }
         file.close();
         
@@ -717,13 +725,12 @@ private:
 class FridgesDatabase
 {
 public:
-    FridgesDatabase()
+    FridgesDatabase(ItemsDatabase& databaseOfItems) : databaseOfItems(databaseOfItems)
     {
         ifstream file(filename);
 
         listOfFridges.clear();
 
-        ItemsDatabase savedItems;
         UserProfiles savedUsers;
 
         string line;
@@ -779,7 +786,7 @@ public:
                 string item;
                 while(getline(listOfItems, item, '-'))
                 {
-                    for (const auto& existingItem : savedItems.getListOfItems())
+                    for (const auto& existingItem : databaseOfItems.getListOfItems())
                     {
                         if(item == existingItem.getItemName())
                         {
@@ -839,47 +846,92 @@ public:
         return listOfFridges;
     }
 
-    // void addFridge(const string& itemName, double length, double width, double height, int expiration)
-    // {
-    //     for (const auto& item : listOfItems)
-    //     {
-    //         if (itemName == item.getItemName())
-    //         {
-    //             cout << itemName << " is already in the database" << endl;
-    //             return;
-    //         }
-    //     }
-    // }
-
-    void saveToFile() const
+    void saveToFile()
     {
         ofstream file(filename);
-        for (const auto& fridge : listOfFridges)
+
+        for (auto& fridge : listOfFridges)
         {
             file << fridge.getFridgeName() << "," << fridge.getLength() << "," 
                  << fridge.getWidth() << "," << fridge.getHeight() << "," 
                  << fridge.getUsedCapacity() << "," << fridge.getTotalCapacity() << "\n";
 
-            ofstream fridgeFile("../Fridges/" + fridge.getFridgeName() + ".csv");
-            
-            for (const auto& section : fridge.getSections())
+            // update KitchenMaster.csv
+            ofstream fridgeFile("Fridges/KitchenMaster.csv");
+
+            for (auto& section : fridge.getSections())
             {
-                fridgeFile << section.getSectionName() << "," 
-                           << section.getSectionOwner().getName() << "," 
-                           << section.getLength() << "," << section.getWidth() << ","
-                           << section.getHeight();
-                
-                fridgeFile << "," << section.getItems()[0].getItemName();
-                for (size_t i = 1; i < section.getItems().size(); i++)
+                cout << section.getSectionName() << ":  "; //
+
+                fridgeFile << section.getSectionName() << ",";
+
+                if (section.getSectionOwner().getEmail() == "")
                 {
-                    fridgeFile << "-" << section.getItems()[i].getItemName();
+                    fridgeFile << "None," << section.getLength() << "," << section.getWidth() << ","
+                                << section.getHeight();
                 }
+                else
+                {
+                    fridgeFile << section.getSectionOwner().getEmail() << "," 
+                                << section.getLength() << "," << section.getWidth() << ","
+                                << section.getHeight();
+                }
+                                
+                if (section.getItems().size() == 0)
+                {
+                    fridgeFile << ",None";
+                }
+                else
+                {
+                    vector<Item> savedItems = databaseOfItems.getListOfItems();
+
+                    vector<Item> itemInSection = section.getItems();
+
+                    if (find(savedItems.begin(), savedItems.end(), itemInSection[0]) != savedItems.end())
+                    {
+                        cout << itemInSection[0].getItemName() << " "; //
+
+                        fridgeFile << "," << itemInSection[0].getItemName();
+                    }
+                    else
+                    {
+                        cout << itemInSection[0].getItemName() << " "; //
+
+                        fridgeFile << "," << itemInSection[0].getItemName() 
+                                    << "~" << itemInSection[0].getLength()
+                                    << "~" << itemInSection[0].getWidth()
+                                    << "~" << itemInSection[0].getHeight()
+                                    << "~" << itemInSection[0].getExpiration();
+                    }
+
+                    for (size_t i = 1; i < itemInSection.size(); i++)
+                    {
+                        cout << itemInSection[i].getItemName() << " "; //
+
+                        if (find(savedItems.begin(), savedItems.end(), itemInSection[i]) != savedItems.end())
+                        {
+                            fridgeFile << "-" << itemInSection[i].getItemName();
+                        }
+                        else
+                        {
+                            fridgeFile << "-" << itemInSection[i].getItemName() 
+                                        << "~" << itemInSection[i].getLength()
+                                        << "~" << itemInSection[i].getWidth()
+                                        << "~" << itemInSection[i].getHeight()
+                                        << "~" << itemInSection[i].getExpiration();
+                        }
+                    }
+                }
+                fridgeFile << "\n";
+                cout << endl;
             }
+            fridgeFile.close();
         }
         file.close();
     }
 
 private:
+    ItemsDatabase databaseOfItems;
     string filename = "listOfFridges.csv";
     vector<Fridge> listOfFridges;
 };
