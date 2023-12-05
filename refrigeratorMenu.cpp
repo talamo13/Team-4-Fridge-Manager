@@ -7,6 +7,197 @@ using namespace std;
 // Function definitions
 void addItemToFridge(UserProfiles&, Fridge&, Item&, Section&, vector<Section>& userSections);
 
+bool checkEmail(vector<User>& listOfUsers, const string& emailToCheck)
+{
+    for (auto& user : listOfUsers)
+    {
+        if (user.getEmail() == emailToCheck)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool checkPass(vector<User>& listOfUsers, const string& email, const string& passCheck)
+{
+    for (const auto& user : listOfUsers)
+    {
+        if ((email == user.getEmail()) && (passCheck == user.getPassword()))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+User& successfulLogin(vector<User>& listOfUsers, const string& emailChecked, const string& passChecked)//Should only run after credential verification
+{
+    for (auto& user : listOfUsers)
+    {
+        if((emailChecked == user.getEmail()) && (passChecked == user.getPassword()))
+        {
+            return user;
+        }
+    }
+}
+
+User& loginChoices(vector<User>& userVec, Fridge& kitchenMaster)
+{
+    int choices;
+    
+    cout << "Select an option: \n"
+         << "-------------------\n"
+         << "1: Register for Fridge Manager\n"
+         << "2: Login\n"
+         << "3: Exit\n"
+         << "Selection: ";
+
+    cin >> choices;
+
+    if (choices == 1) 
+    {
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        string name, email, password;
+        
+        cout << "Enter your full name: ";
+        getline(cin, name);
+
+        cout << "Enter email: ";
+        cin >> email;
+
+        if(checkEmail(userVec, email))
+        {
+            cout << "Create a password: ";
+            cin >> password;
+
+            vector<string> allergies;
+            cout << "\nDo you have any allergies? If you don't type None and click Enter.\n"
+                 << "If you do, type them line-by-line.\n"
+                 << "When you are done, type Done and click Enter." << endl;
+                
+            string allergy;
+            cin >> allergy;
+            allergies.push_back(allergy);
+            
+            if (allergies[0] != "None")
+            {
+                while (allergy != "Done")
+                {
+                    cin >> allergy;
+                    if (allergy != "Done")
+                    {
+                        allergies.push_back(allergy);
+                    }
+                }
+            }
+
+            ofstream file;
+            file.open("masterUsers.csv", ios::app);
+            file << email << "," << password << "," << name << ",";
+            
+            if ((allergies[0] == "None") || (allergies.size() == 1)) 
+            {
+                file << allergies[0] << "\n";
+            }
+            else
+            {
+                file << allergies[0];
+
+                for (size_t i = 1; i < allergies.size(); i++)
+                {
+                    file << "-" << allergies[i];
+                }
+                file << "\n";
+            }
+            
+            
+            User newlyReg = User(email, password, name, allergies);
+            userVec.push_back(newlyReg);
+
+            cout << "Admin is assigning " << newlyReg.getName() << " to a section...";
+
+            ItemsDatabase testItems;
+            FridgesDatabase testFridge(testItems);
+
+            for(size_t i = 0; i < kitchenMaster.getSections().size(); i++)
+            {
+                if (kitchenMaster.getSections()[i].getSectionOwner().getEmail() == "")
+                {
+                    kitchenMaster.getSections()[i].setSectionOwner(newlyReg);
+                    cout << "\nAdmin assigned " << newlyReg.getName() << " to " << kitchenMaster.getSections()[i].getSectionName();
+                    
+                    i = kitchenMaster.getSections().size();
+                }
+            }
+
+            cout << "\n\nAccount has been registered.\n" << endl;
+
+            file.close();
+        }
+        else
+        {
+            cout << "Email already in use. Please try again.\n" << endl;
+            loginChoices(userVec, kitchenMaster);
+        }
+        
+    }
+    else if (choices == 2)
+    {
+        string email, password;
+    
+        do
+        {
+            cout << "Enter email: "; 
+            cin >> email;
+
+            if(checkEmail(userVec, email))
+            {
+                cout << "Incorrect email, please try again." << endl;
+            }
+        }
+        while(checkEmail(userVec, email));
+
+        do
+        { 
+            cout << "Enter password: ";
+            cin >> password;
+
+            if(checkPass(userVec, email, password))
+            {
+                cout << "Incorrect password, please try again." << endl;
+            }
+            else
+            {
+                cout << "Login Successful." << endl;
+
+                for (auto& user : userVec)
+                {
+                    if((email == user.getEmail()) && (password == user.getPassword()))
+                    {
+                        return user;
+                    }
+                }
+            }
+        }
+        while(checkPass(userVec, email, password));
+    }
+    else if(choices == 3)
+    {
+        cout << "Goodbye!" << endl;
+        exit(0);
+    }
+    else
+    {
+        cout << "Please enter a valid option." << endl;
+        loginChoices(userVec, kitchenMaster);
+    }
+
+    static User defaultUser;
+    return defaultUser;
+}
+
 // displayMenu
 void displayMenu()
 {
@@ -24,15 +215,46 @@ void displayMenu()
 
 // Function definition selectChoices
 void selectChoices(UserProfiles& userList, User& user, ItemsDatabase& savedItems, 
-FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section> userSections)
+FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section>& userSections)
 {
     // Variables
     int choice = 0;
     vector<pair<pair<string, string>, int>> showExpirations;
     Section* selectedSection = &userSections[0];
 
+    for (auto& allSections : kitchenMasterTest.getSections())
+    {
+        for (auto& allItems : allSections.getItems())
+        {
+            if (allItems.getExpiration() <= 2)
+            {
+                cout << "\nThe " << allSections.getSectionName() << " owned by: " << allSections.getSectionOwner().getEmail()
+                     << ", has " << allItems.getItemName() << " expiring in " << allItems.getExpiration() << " day(s)!\n";
+            }
+            else if (allItems.getExpiration() < 0)
+            {
+                cout << "\n" << allItems.getItemName() << " has expired in " << allSections.getSectionName() << "owned by: "
+                     << allSections.getSectionOwner().getEmail() << endl;
+            }
+        }
+    }
+    
+    double spaceLeft = (kitchenMasterTest.getTotalCapacity() - kitchenMasterTest.getUsedCapacity()) / kitchenMasterTest.getTotalCapacity() * 100;
+    if (spaceLeft <= 20)
+    {
+        cout << "\nWarning: There is " << spaceLeft
+             << "\% space left in the fridge.\n";
+    }
+
     while (choice != 6)
     {
+        displayMenu();
+
+        if (choice >= 1 && choice <= 6)
+        {
+            cout << "\nPlease select an option between 1 and 6.\n";
+        }
+
         cout << "\nSelect an option: "; 
         cin >> choice; 
         cin.ignore();
@@ -54,9 +276,12 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section> userSection
                     cout << "\nWhich section would you like to add to?\n"
                          << "-------Available Sections-------\n";
 
-                    for (const auto& sections : userSections)
+                    for (const auto& sections : kitchenMasterTest.getSections())
                     {
-                        cout << sections.getSectionName() << endl;
+                        if (sections.getSectionOwner().getEmail() == user.getEmail())
+                        {
+                            cout << sections.getSectionName() << endl;
+                        }
                     }   
 
                     cout << "\nEnter section name: ";
@@ -115,6 +340,56 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section> userSection
                             if (registeredChoice == 1)
                             {
                                 addItemToFridge(userList, kitchenMasterTest, item, *selectedSection, userSections);
+
+                                ofstream fridgeFile("Fridges/KitchenMaster.csv");
+
+                                for (auto& section : kitchenMasterTest.getSections())
+                                {
+                                    fridgeFile << section.getSectionName() << ",";
+
+                                    if (section.getSectionOwner().getEmail() == "")
+                                    {
+                                        fridgeFile << "None," << section.getLength() << "," << section.getWidth() << ","
+                                                    << section.getHeight();
+                                    }
+                                    else
+                                    {
+                                        fridgeFile << section.getSectionOwner().getEmail() << "," 
+                                                    << section.getLength() << "," << section.getWidth() << ","
+                                                    << section.getHeight();
+                                    }
+                                    
+                                    if (section.getItems().size() == 0)
+                                    {
+                                        fridgeFile << ",None";
+                                    }
+                                    else
+                                    {
+                                        vector<Item> itemInSection = section.getItems();
+
+
+                                        fridgeFile << "," << itemInSection[0].getItemName() 
+                                                        << "~" << itemInSection[0].getLength()
+                                                        << "~" << itemInSection[0].getWidth()
+                                                        << "~" << itemInSection[0].getHeight()
+                                                        << "~" << itemInSection[0].getExpiration()
+                                                        << "~" << itemInSection[0].getItemType();
+
+                                        for (size_t i = 1; i < itemInSection.size(); i++)
+                                        {
+                                            fridgeFile << "-" << itemInSection[i].getItemName() 
+                                                        << "~" << itemInSection[i].getLength()
+                                                        << "~" << itemInSection[i].getWidth()
+                                                        << "~" << itemInSection[i].getHeight()
+                                                        << "~" << itemInSection[i].getExpiration()
+                                                        << "~" << itemInSection[i].getItemType();
+                                            
+                                        }
+                                    }
+                                    fridgeFile << "\n";
+                                } 
+                                
+                                fridgeFile.close();
                             }
                         }
                     }
@@ -254,7 +529,6 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section> userSection
                         }
                     }
                 }
-                displayMenu();
                 break;
             }
 
@@ -317,7 +591,7 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section> userSection
                             cout << "\nDays until Expiration: " << item.getExpiration();
                         }
                         
-                        cout << "\nEnter the name of the food to remove: ";
+                        cout << "\n\nEnter the name of the food to remove: ";
                         getline(cin, itemName);
 
                         for (auto& item : selectedSection->getItems())
@@ -418,7 +692,6 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section> userSection
                     }
                     
                 }
-                displayMenu();
                 break;
             }
 
@@ -455,7 +728,6 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section> userSection
                 }
 
                 showExpirations.clear();
-                displayMenu();
                 break;
             }
 
@@ -490,26 +762,6 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section> userSection
                         }
                     }
                 }
-
-                // for (auto& sections: userSections)
-                // {
-                //     for (const auto& items: sections.getItems())
-                //     {
-                //         if (sections.getItems().size() == 0)
-                //         {
-                //             cout << "\nNo items in " << sections.getSectionName();
-                //         }
-                //         else
-                //         {
-                //             cout << "| " << setw(20) << left << items.getItemName()
-                //             << " | " << setw(20) << left << items.getItemVolume() 
-                //             << " | " << setw(22) << left << items.getExpiration()
-                //             << " | " << setw(20) << left << items.getItemType() << endl;
-                //         }
-                //     }
-                // }
-
-                displayMenu();
                 break;
             }
 
@@ -538,8 +790,6 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section> userSection
 
                 cout << "Used " << round((usedSectionSpace / kitchenMasterTest.getTotalCapacity()) * 100)
                 << "\% of the total fridge space available.\n";
-
-                displayMenu();
                 break;
             }
 
@@ -553,10 +803,14 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, vector<Section> userSection
             // User chooses an invalid option
             default:
             {
-                displayMenu();
-                cout << "\nPlease select an option between 1 and 6.\n";
                 break;
             }
+        }
+
+        if (choice == 6)
+        {
+            loginChoices(userList.getUsers(), kitchenMasterTest);
+            choice = 1;
         }
     }
 }
