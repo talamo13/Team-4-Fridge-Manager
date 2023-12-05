@@ -54,7 +54,8 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 bool noFoundSection = true, alreadyRegistered = false;
                 string givenSection, itemName, itemType;
                 double itemLength, itemWidth, itemHeight; 
-                int itemExpiration = 0, sectionCounter = 0, registeredChoice = 3;
+                int itemExpiration = 0, sectionCounter = 0, registeredChoice = 3,
+                addToDatabase = 0;
 
                 while (noFoundSection)
                 {
@@ -144,6 +145,25 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
 
                         Item givenItem(itemName, itemLength, itemWidth, itemHeight, itemExpiration, itemType);
                         addItemToFridge(userList, kitchenMasterTest, givenItem, sectionTest, userSections); 
+
+                        // Add item to database option.
+                        cout << "\nWould you like to add this item to the database? Type 1 for yes and 2 for no: ";
+                        do
+                        {
+                            cout << "\n\nChoice: ";
+                            cin >> addToDatabase;
+                        } while (addToDatabase != 1 && addToDatabase != 2);
+
+                        if (addToDatabase == 1)
+                        {
+                            savedItems.addItem(itemName, itemLength, itemWidth, itemHeight, 
+                            itemExpiration, itemType);
+                            cout << "\nThe " << itemName << " has been added to the database.";
+                        }
+                        else
+                        {
+                            cout << "\nThe " << itemName << " will not be added to the database.";
+                        }
                     }
                 }
 
