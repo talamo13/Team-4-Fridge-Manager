@@ -371,9 +371,9 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                     cout << section.getSectionName() << ": "
                     << "\nLength: " << section.getLength()
                     << "\nWidth: " << section.getWidth()
-                    << "\nHeight: " << section.getHeight()
+                    << "\nHeight: " << section.getHeight() << "\n"
                     << round((section.getRemainingVolume()/section.getSectionVolume()) * 100)
-                    << "\n \% space remaining.\n";
+                    << "\% space remaining.\n";
                     usedSectionSpace += section.getSectionVolume();
                 }
 
