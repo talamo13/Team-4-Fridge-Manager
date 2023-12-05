@@ -5,7 +5,7 @@
 using namespace std;
 
 // Function definitions
-void addItemToFridge(UserProfiles&, Fridge&, Item&, Section&);
+void addItemToFridge(UserProfiles&, Fridge&, Item&, Section&, vector<Section>& userSections);
 
 // displayMenu
 void displayMenu()
@@ -124,12 +124,12 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                                 Item registeredItem(item.getItemName(), item.getLength(), 
                                 item.getWidth(), item.getHeight(), item.getExpiration(), 
                                 item.getItemType());
-                                addItemToFridge(userList, kitchenMasterTest, registeredItem, sectionTest);
+                                addItemToFridge(userList, kitchenMasterTest, registeredItem, sectionTest, userSections);
                             }
                         }
                     }
 
-                    if (registeredChoice == 2 || 3)
+                    if (registeredChoice == 2 || registeredChoice == 3)
                     {
                         cout << "\nEnter the item length: ";
                         cin >> itemLength;
@@ -143,7 +143,7 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                         cin >> itemExpiration;
 
                         Item givenItem(itemName, itemLength, itemWidth, itemHeight, itemExpiration, itemType);
-                        addItemToFridge(userList, kitchenMasterTest, givenItem, sectionTest); 
+                        addItemToFridge(userList, kitchenMasterTest, givenItem, sectionTest, userSections); 
                     }
                 }
 
@@ -158,6 +158,7 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                     bool noFoundSection = true, foundItem = false;
                     string givenSection, itemName;
                     int itemExpiration = 0, sectionCounter = 0, registeredChoice = 0;
+                    Item toRemove("placeholder", 0, 0, 0, 0, "placeholder");
 
                     while (noFoundSection)
                     {
@@ -171,7 +172,7 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                         cout << "\nEnter its name: ";
                         getline(cin, givenSection);
 
-                        for (auto& sections : kitchenMasterTest.getSections())
+                        for (auto& sections : userSections)
                         {
                             if (givenSection == sections.getSectionName())
                             {
@@ -201,7 +202,7 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                             cout << "\nAll items in this section: ";
                             for (auto& item : sectionTest.getItems())
                             {
-                                cout << "\nName: " << item.getItemName();
+                                cout << "\n\nName: " << item.getItemName();
                                 cout << "\nType: " << item.getItemType();
                                 cout << "\nPhysical Dimensions (inches): " 
                                 << item.getLength() << " x " << item.getWidth() << " x "
@@ -209,7 +210,7 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                                 cout << "\nDays until Expiration: " << item.getExpiration();
                             }
                             
-                            cout << "\nEnter the name of the food: ";
+                            cout << "\nEnter the name of the food to remove: ";
                             getline(cin, itemName);
 
                             for (auto& item : sectionTest.getItems())
@@ -224,6 +225,7 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                                     << item.getHeight();
                                     cout << "\nDays until Expiration: " << item.getExpiration();
 
+                                    toRemove = item;
                                     foundItem = true;
                                     break;
                                 }
@@ -241,8 +243,21 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                         // Removing the item.
                         if (registeredChoice == 1)
                         {
-                            cout << endl << itemName << " has been removed.";
+                            cout << endl << toRemove.getItemName() << " has been removed.";
+
                             kitchenMasterTest.removeItem(itemName, sectionTest.getSectionName());
+
+                            for (Section& findSection : userSections)
+                            {
+                                if (findSection.getSectionName() == sectionTest.getSectionName())
+                                {
+                                    findSection.removeItem(toRemove);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            cout << "\nThe item will not be removed.";
                         }
                         
                     }
@@ -295,7 +310,6 @@ FridgesDatabase& fridges, Fridge& kitchenMasterTest, Section& sectionTest)
                 cout << "-----------------------------------------------------------------------------------"<< endl;
                 cout << "| Item                 | Volume               | Days to Expire         | Type" << endl;
                 cout << "-----------------------------------------------------------------------------------" << endl;
-                cout << "---------------------------------------------------------------------------------" << endl;
                 
                 for (const auto& sections: userSections)
                 {
@@ -448,7 +462,7 @@ void addFridgeChoices()
 }
 
 // Function for adding item to fridge
-void addItemToFridge(UserProfiles& profiles, Fridge& fridge, Item& item, Section& section)
+void addItemToFridge(UserProfiles& profiles, Fridge& fridge, Item& item, Section& section, vector<Section>& userSections)
 {
     if (item.getLength() > section.getLength() || item.getWidth() > section.getWidth() ||
     item.getHeight() > section.getHeight())
@@ -473,5 +487,12 @@ void addItemToFridge(UserProfiles& profiles, Fridge& fridge, Item& item, Section
 
     cout << item.getItemName() << " was successfully added to the " 
     << section.getSectionName() << ".\n";
-    section.addItem(item);
+
+    for (Section& findSection : userSections)
+    {
+        if (findSection.getSectionName() == section.getSectionName())
+        {
+            findSection.addItem(item);
+        }
+    }
 }
