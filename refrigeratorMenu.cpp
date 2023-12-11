@@ -186,6 +186,7 @@ User& loginChoices(vector<User>& userVec, Fridge& kitchenMaster)
     else if(choices == 3)
     {
         cout << "Goodbye!" << endl;
+        system("pause");
         exit(0);
     }
     else
